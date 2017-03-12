@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.app.ActionBar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -50,21 +51,16 @@ public class MainActivity extends ListActivity {
     public TweetAdapter mTweetAdapter;
     private Handler mHandler;
     private ListView listView;
-    private Dialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_main);
-
-
 
         if (!TwitterUtils.hasAccessToken(getApplicationContext())) {
             Intent intent = new Intent(this, Authorization.class);
             startActivity(intent);
             finish();
         } else {
-
 
             mTweetAdapter = new TweetAdapter(getApplicationContext());
             setListAdapter(mTweetAdapter);
@@ -106,10 +102,6 @@ public class MainActivity extends ListActivity {
                 }
             });
 
-
-
-
-
             reloadTimeLine();
             streamTimeLine();
 
@@ -137,7 +129,13 @@ public class MainActivity extends ListActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.activity_main, menu);
-        return super.onCreateOptionsMenu(menu);
+        super.onCreateOptionsMenu(menu);
+        ActionBar actionBar=getActionBar();
+        actionBar.setDisplayShowTitleEnabled(false);
+        actionBar.setIcon(null);
+        actionBar.setDisplayShowHomeEnabled(false);
+        actionBar.setDisplayUseLogoEnabled(false);
+        return true;
     }
 
     private void reloadTimeLine() {
@@ -214,7 +212,8 @@ public class MainActivity extends ListActivity {
                 builder.setSmallIcon(R.drawable.images);
                 //テキスト設定
                 builder.setContentTitle("CreamBox");
-                builder.setContentText("You've got Direct Mail");
+                builder.setContentText("You've got Direct Mail from @"+directMessage.getSender().getScreenName());
+                builder.setShowWhen(true);
                 //Activityに移動(未確認)
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("hoge"));
                 PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(),RESULT_OK,intent, PendingIntent.FLAG_ONE_SHOT);
