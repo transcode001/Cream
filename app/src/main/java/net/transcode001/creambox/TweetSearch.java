@@ -8,6 +8,7 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +42,7 @@ public class TweetSearch extends Activity {
     private EditText et;
     private twitter4j.Query mQuery;
     private ListView listView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -51,6 +53,26 @@ public class TweetSearch extends Activity {
         listView.setAdapter(mAdapter);
         mTwitter=TwitterUtils.getInstance(this);
         et = (EditText)findViewById(R.id.word_search);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_search);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (!et.getText().toString().equals("")) {
+
+                            mQuery.setQuery(et.getText().toString());
+                            System.out.println("go to searchWord\n");
+                            searchWord(mQuery);
+                        }
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                },3000);
+            }
+        });
+
 
         mQuery=new twitter4j.Query();
         findViewById(R.id.search_button).setOnClickListener(new View.OnClickListener() {
@@ -84,7 +106,7 @@ public class TweetSearch extends Activity {
                         @Override
                         public void run() {
                             for(twitter4j.Status status : result.getTweets()){
-                                mAdapter.add(status);
+                                mAdapter.insert(status,0);
                                 System.out.println(result.getTweets().toString());
                             }
                         }

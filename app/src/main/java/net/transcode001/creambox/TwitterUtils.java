@@ -2,6 +2,9 @@ package net.transcode001.creambox;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
+
+import java.util.concurrent.ExecutionException;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterFactory;
@@ -60,16 +63,17 @@ public class TwitterUtils {
         editor.apply();
     }
 
-    public static AccessToken loadAccessToken(Context context) {
-        SharedPreferences preferences = context.getSharedPreferences("pref_name", Context.MODE_PRIVATE);
-        String token = preferences.getString("token", null);
-        String tokenSecret = preferences.getString("token_secret", null);
-        if (token != null && tokenSecret != null) {
-            return new AccessToken(token, tokenSecret);
-        } else {
-            return null;
+        public static AccessToken loadAccessToken(Context context) {
+            final Context mContext = context;
+            SharedPreferences preferences = mContext.getSharedPreferences("pref_name", Context.MODE_PRIVATE);
+            String token = preferences.getString("token", null);
+            String tokenSecret = preferences.getString("token_secret", null);
+            if (token != null && tokenSecret != null) {
+                return new AccessToken(token, tokenSecret);
+            } else {
+                return null;
+            }
         }
-    }
 
     public static boolean hasAccessToken(Context context) {
         return loadAccessToken(context) != null;

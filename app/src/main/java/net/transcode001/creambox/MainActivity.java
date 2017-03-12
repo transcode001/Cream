@@ -380,8 +380,12 @@ public class MainActivity extends ListActivity {
             //getUserIcon();
 
 
-            item = getItem(position);
-            if(item.isRetweet()) item=item.getRetweetedStatus();
+            if(getItem(position).isRetweet()){
+                item=getItem(position).getRetweetedStatus();
+            }else{
+                item = getItem(position);
+            }
+
             TextView name = (TextView) convertView.findViewById(R.id.name);
             name.setText(item.getUser().getName());
             TextView screenName = (TextView) convertView.findViewById(R.id.screen_name);
