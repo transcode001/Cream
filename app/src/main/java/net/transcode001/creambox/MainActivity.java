@@ -16,6 +16,7 @@ import android.os.Handler;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.app.ActionBar;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -42,7 +43,7 @@ import twitter4j.*;
 import twitter4j.conf.Configuration;
 
 
-public class MainActivity extends ListActivity {
+public class MainActivity extends Activity {
 
 
     public Twitter mTwitter;
@@ -51,10 +52,12 @@ public class MainActivity extends ListActivity {
     public TweetAdapter mTweetAdapter;
     private Handler mHandler;
     private ListView listView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
         if (!TwitterUtils.hasAccessToken(getApplicationContext())) {
             Intent intent = new Intent(this, Authorization.class);
@@ -63,18 +66,31 @@ public class MainActivity extends ListActivity {
         } else {
 
             mTweetAdapter = new TweetAdapter(getApplicationContext());
-            setListAdapter(mTweetAdapter);
+            listView = (ListView)findViewById(R.id.listView_timeline);
+            listView.setAdapter(mTweetAdapter);
             mHandler = new Handler();
             mConfiguration = TwitterUtils.getConfigurationInstance(this);
             mTwitterStream = new TwitterStreamFactory(mConfiguration).getInstance();
             mTwitter = TwitterUtils.getInstance(this);
 
-
-
+            //引っ張ってタイムラインの更新の定義(手動取得とストリーミングの区別ができてないため未定義)
+            mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_timeline);
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            System.out.println("There is SwipeRefresh");
+                            mSwipeRefreshLayout.setRefreshing(false);
+                        }
+                    },3000);
+                }
+            });
 
             //長押しの定義はListActivityではサポート外なので
             //ツイート長押しの処理を定義
-            listView = getListView();
+
 
             listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
                 @Override
@@ -136,6 +152,12 @@ public class MainActivity extends ListActivity {
         actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setDisplayUseLogoEnabled(false);
         return true;
+    }
+
+    @Override
+    protected void onPause(){
+        super.onPause();
+        mTwitterStream.shutdown();
     }
 
     private void reloadTimeLine() {
