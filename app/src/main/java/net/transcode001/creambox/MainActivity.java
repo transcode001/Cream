@@ -47,12 +47,14 @@ public class MainActivity extends Activity {
 
 
     public Twitter mTwitter;
-    private TwitterStream mTwitterStream;
     public Configuration mConfiguration;
     public TweetAdapter mTweetAdapter;
+    private TwitterStream storeTwittterStreamInstance;
     private Handler mHandler;
     private ListView listView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+    private Boolean userStreamEnable=false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +72,6 @@ public class MainActivity extends Activity {
             listView.setAdapter(mTweetAdapter);
             mHandler = new Handler();
             mConfiguration = TwitterUtils.getConfigurationInstance(this);
-            mTwitterStream = new TwitterStreamFactory(mConfiguration).getInstance();
             mTwitter = TwitterUtils.getInstance(this);
 
             //引っ張ってタイムラインの更新の定義(手動取得とストリーミングの区別ができてないため未定義)
@@ -120,7 +121,6 @@ public class MainActivity extends Activity {
 
             reloadTimeLine();
             streamTimeLine();
-
         }
 
 
@@ -137,6 +137,15 @@ public class MainActivity extends Activity {
                 Intent intent_menu = new Intent(this,TweetSearch.class);
                 startActivity(intent_menu);
                 return true;
+            case R.id.menu_userstream_switch:
+                if(userStreamEnable){
+                    streamTimeLine();
+                    showToast("UserStreamから切断しました");
+                }else{
+                    streamTimeLine();
+                    showToast("UserStreamに接続しました");
+                }
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -151,16 +160,27 @@ public class MainActivity extends Activity {
         actionBar.setIcon(null);
         actionBar.setDisplayShowHomeEnabled(false);
         actionBar.setDisplayUseLogoEnabled(false);
+
         return true;
     }
 
     @Override
     protected void onPause(){
         super.onPause();
-        mTwitterStream.shutdown();
+        streamTimeLine();
+        userStreamEnable = false;
+    }
+
+    @Override
+    protected void onResume(){
+        super.onResume();
+        streamTimeLine();
+        userStreamEnable = true;
+
     }
 
     private void reloadTimeLine() {
+
         AsyncTask<Void, Void, List<twitter4j.Status>> task = new AsyncTask<Void, Void, List<twitter4j.Status>>() {
             @Override
             protected List<twitter4j.Status> doInBackground(Void... params) {
@@ -177,7 +197,7 @@ public class MainActivity extends Activity {
                 if (result != null) {
                     //mTweetAdapter.clear();
                     for (twitter4j.Status status : result) {
-                        mTweetAdapter.add(status);
+                        mTweetAdapter.insert(status,0);
                     }
                     //getListView().setSelection(0);
                 } else {
@@ -194,185 +214,194 @@ public class MainActivity extends Activity {
 
 
     private void streamTimeLine() {
+        if(!userStreamEnable) {
+            TwitterStream mTwitterStream = new TwitterStreamFactory(mConfiguration).getInstance();
+            UserStreamListener listener = new UserStreamListener() {
+                @Override
+                public void onDeletionNotice(long l, long l1) {
 
-        UserStreamListener listener = new UserStreamListener() {
-            @Override
-            public void onDeletionNotice(long l, long l1) {
+                }
 
-            }
+                @Override
+                public void onFriendList(long[] longs) {
 
-            @Override
-            public void onFriendList(long[] longs) {
+                }
 
-            }
+                @Override
+                public void onFavorite(User user, User user1, Status status) {
 
-            @Override
-            public void onFavorite(User user, User user1, Status status) {
+                }
 
-            }
+                @Override
+                public void onUnfavorite(User user, User user1, Status status) {
 
-            @Override
-            public void onUnfavorite(User user, User user1, Status status) {
+                }
 
-            }
+                @Override
+                public void onFollow(User user, User user1) {
 
-            @Override
-            public void onFollow(User user, User user1) {
+                }
 
-            }
+                @Override
+                public void onUnfollow(User user, User user1) {
 
-            @Override
-            public void onUnfollow(User user, User user1) {
+                }
 
-            }
+                @Override
+                public void onDirectMessage(DirectMessage directMessage) {
+                    //NotificationBuilder構築
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
+                    //アイコンを設定
+                    builder.setSmallIcon(R.drawable.images);
+                    //テキスト設定
+                    builder.setContentTitle("CreamBox");
+                    builder.setContentText("You've got Direct Mail from @" + directMessage.getSender().getScreenName());
+                    builder.setShowWhen(true);
+                    //Activityに移動(未確認)
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("hoge"));
+                    PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), RESULT_OK, intent, PendingIntent.FLAG_ONE_SHOT);
+                    builder.setContentIntent(contentIntent);
+                    builder.setAutoCancel(true);
 
-            @Override
-            public void onDirectMessage(DirectMessage directMessage) {
-                //NotificationBuilder構築
-                NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
-                //アイコンを設定
-                builder.setSmallIcon(R.drawable.images);
-                //テキスト設定
-                builder.setContentTitle("CreamBox");
-                builder.setContentText("You've got Direct Mail from @"+directMessage.getSender().getScreenName());
-                builder.setShowWhen(true);
-                //Activityに移動(未確認)
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("hoge"));
-                PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(),RESULT_OK,intent, PendingIntent.FLAG_ONE_SHOT);
-                builder.setContentIntent(contentIntent);
-                builder.setAutoCancel(true);
+                    final NotificationCompat.Builder mBuilder = builder;
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            NotificationManagerCompat manager = NotificationManagerCompat.from(getApplicationContext());
+                            manager.notify(3, mBuilder.build());
+                        }
+                    });
 
-                final NotificationCompat.Builder mBuilder=builder;
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        NotificationManagerCompat manager = NotificationManagerCompat.from(getApplicationContext());
-                        manager.notify(3, mBuilder.build());
-                    }
-                });
+                }
 
-            }
+                @Override
+                public void onUserListMemberAddition(User user, User user1, UserList userList) {
 
-            @Override
-            public void onUserListMemberAddition(User user, User user1, UserList userList) {
+                }
 
-            }
+                @Override
+                public void onUserListMemberDeletion(User user, User user1, UserList userList) {
 
-            @Override
-            public void onUserListMemberDeletion(User user, User user1, UserList userList) {
+                }
 
-            }
+                @Override
+                public void onUserListSubscription(User user, User user1, UserList userList) {
 
-            @Override
-            public void onUserListSubscription(User user, User user1, UserList userList) {
+                }
 
-            }
+                @Override
+                public void onUserListUnsubscription(User user, User user1, UserList userList) {
 
-            @Override
-            public void onUserListUnsubscription(User user, User user1, UserList userList) {
+                }
 
-            }
+                @Override
+                public void onUserListCreation(User user, UserList userList) {
 
-            @Override
-            public void onUserListCreation(User user, UserList userList) {
+                }
 
-            }
+                @Override
+                public void onUserListUpdate(User user, UserList userList) {
 
-            @Override
-            public void onUserListUpdate(User user, UserList userList) {
+                }
 
-            }
+                @Override
+                public void onUserListDeletion(User user, UserList userList) {
 
-            @Override
-            public void onUserListDeletion(User user, UserList userList) {
+                }
 
-            }
+                @Override
+                public void onUserProfileUpdate(User user) {
 
-            @Override
-            public void onUserProfileUpdate(User user) {
+                }
 
-            }
+                @Override
+                public void onUserSuspension(long l) {
 
-            @Override
-            public void onUserSuspension(long l) {
+                }
 
-            }
+                @Override
+                public void onUserDeletion(long l) {
 
-            @Override
-            public void onUserDeletion(long l) {
+                }
 
-            }
+                @Override
+                public void onBlock(User user, User user1) {
 
-            @Override
-            public void onBlock(User user, User user1) {
+                }
 
-            }
+                @Override
+                public void onUnblock(User user, User user1) {
 
-            @Override
-            public void onUnblock(User user, User user1) {
+                }
 
-            }
+                @Override
+                public void onRetweetedRetweet(User user, User user1, Status status) {
 
-            @Override
-            public void onRetweetedRetweet(User user, User user1, Status status) {
+                }
 
-            }
+                @Override
+                public void onFavoritedRetweet(User user, User user1, Status status) {
 
-            @Override
-            public void onFavoritedRetweet(User user, User user1, Status status) {
+                }
 
-            }
+                @Override
+                public void onQuotedTweet(User user, User user1, Status status) {
 
-            @Override
-            public void onQuotedTweet(User user, User user1, Status status) {
+                }
 
-            }
+                @Override
+                public void onStatus(Status status) {
+                    final String tweets = "@" + status.getUser().getScreenName() + ":" + status.getText() + "\n";
+                    final twitter4j.Status tweet = status;
+                    System.out.println(tweets);
 
-            @Override
-            public void onStatus(Status status) {
-                final String tweets = "@" + status.getUser().getScreenName() + ":" + status.getText() + "\n";
-                final twitter4j.Status tweet = status;
-                System.out.println(tweets);
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mTweetAdapter.insert(tweet, 0);
+                            //getListView().setSelection(0);
+                        }
+                    });
 
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mTweetAdapter.insert(tweet, 0);
-                        //getListView().setSelection(0);
-                    }
-                });
+                }
 
-            }
+                @Override
+                public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
 
-            @Override
-            public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
+                }
 
-            }
+                @Override
+                public void onTrackLimitationNotice(int i) {
 
-            @Override
-            public void onTrackLimitationNotice(int i) {
+                }
 
-            }
+                @Override
+                public void onScrubGeo(long l, long l1) {
 
-            @Override
-            public void onScrubGeo(long l, long l1) {
+                }
 
-            }
+                @Override
+                public void onStallWarning(StallWarning stallWarning) {
 
-            @Override
-            public void onStallWarning(StallWarning stallWarning) {
+                }
 
-            }
+                @Override
+                public void onException(Exception e) {
 
-            @Override
-            public void onException(Exception e) {
+                }
+            };
+            //インスタンスを設定
+            mTwitterStream.addListener(listener);
+            //UserStreamを開始
+            mTwitterStream.user();
+            userStreamEnable = true;
+            storeTwittterStreamInstance = mTwitterStream;
+        }else{
+            storeTwittterStreamInstance.cleanUp();
+            storeTwittterStreamInstance.shutdown();
+            userStreamEnable = false;
+        }
 
-            }
-        };
-        //インスタンスを設定
-        mTwitterStream.addListener(listener);
-        //UserStreamを開始
-        mTwitterStream.user();
     }
 
 
