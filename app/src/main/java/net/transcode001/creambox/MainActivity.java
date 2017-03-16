@@ -2,8 +2,6 @@ package net.transcode001.creambox;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ListActivity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
@@ -178,6 +176,7 @@ public class MainActivity extends Activity {
         userStreamEnable = true;
 
     }
+
 
     private void reloadTimeLine() {
 
