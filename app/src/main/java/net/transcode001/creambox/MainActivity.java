@@ -135,15 +135,6 @@ public class MainActivity extends Activity {
                 Intent intent_menu = new Intent(this,TweetSearch.class);
                 startActivity(intent_menu);
                 return true;
-            case R.id.menu_userstream_switch:
-                if(userStreamEnable){
-                    streamTimeLine();
-                    showToast("UserStreamから切断しました");
-                }else{
-                    streamTimeLine();
-                    showToast("UserStreamに接続しました");
-                }
-                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -162,20 +153,6 @@ public class MainActivity extends Activity {
         return true;
     }
 
-    @Override
-    protected void onPause(){
-        super.onPause();
-        streamTimeLine();
-        userStreamEnable = false;
-    }
-
-    @Override
-    protected void onResume(){
-        super.onResume();
-        streamTimeLine();
-        userStreamEnable = true;
-
-    }
 
 
     private void reloadTimeLine() {
@@ -196,7 +173,7 @@ public class MainActivity extends Activity {
                 if (result != null) {
                     //mTweetAdapter.clear();
                     for (twitter4j.Status status : result) {
-                        mTweetAdapter.insert(status,0);
+                        mTweetAdapter.add(status);
                     }
                     //getListView().setSelection(0);
                 } else {
