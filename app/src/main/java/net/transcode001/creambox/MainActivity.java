@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -72,20 +73,6 @@ public class MainActivity extends Activity {
             mConfiguration = TwitterUtils.getConfigurationInstance(this);
             mTwitter = TwitterUtils.getInstance(this);
 
-            //引っ張ってタイムラインの更新の定義(手動取得とストリーミングの区別ができてないため未定義)
-            mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_timeline);
-            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            System.out.println("There is SwipeRefresh");
-                            mSwipeRefreshLayout.setRefreshing(false);
-                        }
-                    },3000);
-                }
-            });
 
             //長押しの定義はListActivityではサポート外なので
             //ツイート長押しの処理を定義
@@ -406,18 +393,20 @@ public class MainActivity extends Activity {
 
             //getUserIcon();
 
-
+            TextView text = (TextView) convertView.findViewById(R.id.text);
             if(getItem(position).isRetweet()){
                 item=getItem(position).getRetweetedStatus();
+                text.setTextColor(Color.rgb(0,100,0));
             }else{
                 item = getItem(position);
+                text.setTextColor(Color.BLACK);
             }
 
             TextView name = (TextView) convertView.findViewById(R.id.name);
             name.setText(item.getUser().getName());
             TextView screenName = (TextView) convertView.findViewById(R.id.screen_name);
             screenName.setText("@" + item.getUser().getScreenName());
-            TextView text = (TextView) convertView.findViewById(R.id.text);
+
             text.setText(item.getText());
             SmartImageView sImageView = (SmartImageView) convertView.findViewById(R.id.icon);
             sImageView.setImageUrl(item.getUser().getProfileImageURL());

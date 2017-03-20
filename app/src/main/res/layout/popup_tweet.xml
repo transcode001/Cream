@@ -9,10 +9,9 @@
         android:id="@+id/popup_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Popup"
         android:textSize="15sp" />
     <Button
-        android:id="@+id/test_status"
+        android:id="@+id/retweet_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="test"

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
@@ -86,8 +87,10 @@ public class Authorization extends Activity{
                 } catch (TwitterException e) {
                     if(e.getStatusCode()==401){
                         Log.e("UnableToGetAccessCode",e.toString());
+                        showToast("認証エラー\n一時的に利用できません");
                     }else {
                         Log.e("enterPinError", e.toString());
+                        showToast("認証エラー\n一時的に利用できません");
                     }
                     return null;
 
@@ -111,6 +114,10 @@ public class Authorization extends Activity{
         Intent intent=new Intent(this,MainActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    private void showToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
 
