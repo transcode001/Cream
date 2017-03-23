@@ -4,6 +4,12 @@
 
 
     <item
+        android:id="@+id/reload_timeline"
+        android:orderInCategory="100"
+        android:showAsAction="always"
+        android:title="更新" />
+
+    <item
         android:id="@+id/menu_search"
         app:icon="@drawable/images"
         android:orderInCategory="100"
@@ -16,6 +22,7 @@
         android:orderInCategory="100"
         android:showAsAction="always"
         android:title="@string/menu_tweet"/>
+
 
 
 

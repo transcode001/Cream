@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.app.ActionBar;
@@ -36,7 +37,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 
 import twitter4j.*;
 import twitter4j.conf.Configuration;
@@ -104,7 +109,7 @@ public class MainActivity extends Activity {
                 }
             });
 
-            reloadTimeLine();
+            loadTimeLine();
             streamTimeLine();
         }
 
@@ -121,6 +126,9 @@ public class MainActivity extends Activity {
             case R.id.menu_search:
                 Intent intent_menu = new Intent(this,TweetSearch.class);
                 startActivity(intent_menu);
+                return true;
+            case R.id.reload_timeline:
+                reloadTimeLine();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -142,7 +150,7 @@ public class MainActivity extends Activity {
 
 
 
-    private void reloadTimeLine() {
+    private void loadTimeLine() {
 
         AsyncTask<Void, Void, List<twitter4j.Status>> task = new AsyncTask<Void, Void, List<twitter4j.Status>>() {
             @Override
@@ -150,6 +158,9 @@ public class MainActivity extends Activity {
                 try {
                     return mTwitter.getHomeTimeline();
                 } catch (TwitterException e) {
+                    if(e.isCausedByNetworkIssue()){
+                        showToast("ネットワークに接続されていません");
+                    }
                     e.printStackTrace();
                 }
                 return null;
@@ -171,8 +182,47 @@ public class MainActivity extends Activity {
         task.execute();
     }
 
+    private void reloadTimeLine() {
+
+        AsyncTask<Void, Void, List<twitter4j.Status>> task = new AsyncTask<Void, Void, List<twitter4j.Status>>() {
+            @Override
+            protected List<twitter4j.Status> doInBackground(Void... params) {
+                try {
+                    twitter4j.Status s = mTweetAdapter.getItem(mTweetAdapter.getCount()-1);
+                    Paging p = new Paging();
+                    p.setMaxId(s.getId());
+                    return mTwitter.getHomeTimeline(p);
+                } catch (TwitterException e) {
+                    if(e.isCausedByNetworkIssue()){
+                        showToast("ネットワークに接続されていません");
+                    }
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(List<twitter4j.Status> result) {
+                if (result != null) {
+                    //mTweetAdapter.clear();
+                    int position=mTweetAdapter.getCount();
+                    result.remove(0);
+                    Collections.reverse(result);
+
+                    for (twitter4j.Status status : result) {
+                        mTweetAdapter.insert(status,position);
+                    }
+                    //getListView().setSelection(0);
+                } else {
+                    showToast("タイムラインの取得に失敗しました");
+                }
+            }
+        };
+        task.execute();
+    }
+
     private void showToast(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
     }
 
 
@@ -370,11 +420,8 @@ public class MainActivity extends Activity {
 
     private class TweetAdapter extends ArrayAdapter<twitter4j.Status> {
         private LayoutInflater mInflater;
-        private URL url;
-        private InputStream mStream;
-        private Bitmap bmp;
-        private ImageView imageView;
         private Status item;
+        private ImageView imageView;
 
         public TweetAdapter(Context context) {
             super(context, android.R.layout.simple_list_item_1);
@@ -388,10 +435,11 @@ public class MainActivity extends Activity {
             }
 
 
-            //imageView = (ImageView) convertView.findViewById(R.id.icon);
+
             //Boolean getView=Boolean.FALSE;
 
-            //getUserIcon();
+
+
 
             TextView text = (TextView) convertView.findViewById(R.id.text);
             if(getItem(position).isRetweet()){
@@ -400,7 +448,10 @@ public class MainActivity extends Activity {
             }else{
                 item = getItem(position);
                 text.setTextColor(Color.BLACK);
+                //imageView = (ImageView)convertView.findViewById(R.id.icon);
+                //getUserIcon();
             }
+
 
             TextView name = (TextView) convertView.findViewById(R.id.name);
             name.setText(item.getUser().getName());
@@ -408,6 +459,7 @@ public class MainActivity extends Activity {
             screenName.setText("@" + item.getUser().getScreenName());
 
             text.setText(item.getText());
+
             SmartImageView sImageView = (SmartImageView) convertView.findViewById(R.id.icon);
             sImageView.setImageUrl(item.getUser().getProfileImageURL());
             TextView via=(TextView) convertView.findViewById(R.id.via);
@@ -427,10 +479,15 @@ public class MainActivity extends Activity {
                 @Override
                 protected Boolean doInBackground(Void... params) {
                     try {
-                        url = new URL(item.getUser().getProfileImageURL());
-                        mStream = url.openStream();
-                        bmp = BitmapFactory.decodeStream(mStream);
-                        //imageView.setImageBitmap(bmp);
+                        URL url = new URL(item.getUser().getProfileImageURL());
+                        InputStream mStream = url.openStream();
+                        final Bitmap bmp = BitmapFactory.decodeStream(mStream);
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                imageView.setImageBitmap(bmp);
+                            }
+                        });
                         return true;
                     } catch (MalformedURLException e) {
                         Log.e("MalformedURLException", e.toString());
@@ -442,12 +499,6 @@ public class MainActivity extends Activity {
 
                 }
 
-                @Override
-                protected void onPostExecute(Boolean bool) {
-                    if (bool == Boolean.TRUE) {
-                        imageView.setImageBitmap(bmp);
-                    }
-                }
             };
             task.execute();
             return true;
