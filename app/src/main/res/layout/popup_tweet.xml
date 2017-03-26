@@ -11,10 +11,10 @@
         android:layout_height="wrap_content"
         android:textSize="15sp" />
     <Button
-        android:id="@+id/retweet_button"
+        android:id="@+id/button_retweet_tweet"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="test"
+        android:text="retweet"
         />
 
 

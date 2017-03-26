@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -82,33 +83,6 @@ public class MainActivity extends Activity {
             //長押しの定義はListActivityではサポート外なので
             //ツイート長押しの処理を定義
 
-
-            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                @Override
-                public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-
-                    LayoutInflater li = (LayoutInflater) getApplicationContext()
-                            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-                    View content = li.inflate(R.layout.popup_tweet,null);
-                    //場所をセット
-                    view.setVerticalScrollbarPosition(position);
-
-                    TextView tv = (TextView) view.findViewById(R.id.text);
-                    TextView name = (TextView) view.findViewById(R.id.name);
-
-                    builder.setView(content);
-
-                    builder.setTitle(name.getText());
-                    builder.setMessage(tv.getText());
-                    builder.create().show();
-
-                    return true;
-                }
-            });
-
             loadTimeLine();
             streamTimeLine();
         }
@@ -148,7 +122,60 @@ public class MainActivity extends Activity {
         return true;
     }
 
+    private void setTweetPopup(){
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
 
+                final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                LayoutInflater li = (LayoutInflater) getApplicationContext()
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+                View content = li.inflate(R.layout.popup_tweet,null);
+                //場所をセット
+                view.setVerticalScrollbarPosition(position);
+
+                builder.setView(content);
+                TextView tv = (TextView) view.findViewById(R.id.text);
+                TextView name = (TextView) view.findViewById(R.id.name);
+
+                final long tweetId = mTweetAdapter.getItem(position).getId();
+                Button retweetButton = (Button) content.findViewById(R.id.button_retweet_tweet);
+                retweetButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        AsyncTask<Void,Void,Boolean> task= new AsyncTask<Void, Void, Boolean>() {
+                            @Override
+                            protected Boolean doInBackground(Void... voids) {
+                                try{
+                                    mTwitter.retweetStatus(tweetId);
+                                    return true;
+                                }catch(TwitterException e){
+                                    return false;
+                                }
+
+                            }
+                            @Override
+                            protected void onPostExecute(Boolean bool){
+                                if(bool) showToast("リツイートしました");
+                                else showToast("リツイートに失敗しました\nリクエストを実行できません");
+                            }
+                        };
+                        task.execute();
+                    }
+                });
+
+
+
+
+                builder.setTitle(name.getText());
+                builder.setMessage(tv.getText());
+                builder.create().show();
+
+                return true;
+            }
+        });
+    }
 
     private void loadTimeLine() {
 
@@ -224,7 +251,6 @@ public class MainActivity extends Activity {
     private void showToast(String text) {
         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
     }
-
 
     private void streamTimeLine() {
         if(!userStreamEnable) {
@@ -376,6 +402,7 @@ public class MainActivity extends Activity {
                         }
                     });
 
+
                 }
 
                 @Override
@@ -417,7 +444,6 @@ public class MainActivity extends Activity {
 
     }
 
-
     private class TweetAdapter extends ArrayAdapter<twitter4j.Status> {
         private LayoutInflater mInflater;
         private Status item;
@@ -434,12 +460,7 @@ public class MainActivity extends Activity {
                 convertView = mInflater.inflate(R.layout.tweet_layout, null);
             }
 
-
-
             //Boolean getView=Boolean.FALSE;
-
-
-
 
             TextView text = (TextView) convertView.findViewById(R.id.text);
             if(getItem(position).isRetweet()){
@@ -451,7 +472,6 @@ public class MainActivity extends Activity {
                 //imageView = (ImageView)convertView.findViewById(R.id.icon);
                 //getUserIcon();
             }
-
 
             TextView name = (TextView) convertView.findViewById(R.id.name);
             name.setText(item.getUser().getName());
@@ -468,6 +488,7 @@ public class MainActivity extends Activity {
             String[] viaTexts = viaText[1].split("<",0);
 
             via.setText("via "+viaTexts[0]);
+            setTweetPopup();
 
             return convertView;
 
