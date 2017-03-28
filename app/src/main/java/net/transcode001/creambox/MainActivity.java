@@ -141,6 +141,7 @@ public class MainActivity extends Activity {
 
                 final long tweetId = mTweetAdapter.getItem(position).getId();
                 Button retweetButton = (Button) content.findViewById(R.id.button_retweet_tweet);
+                Button favoriteButton = (Button) content.findViewById(R.id.button_favorite_tweet);
                 retweetButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -164,8 +165,59 @@ public class MainActivity extends Activity {
                         task.execute();
                     }
                 });
+                if(mTweetAdapter.getItem(position).isFavorited()){
+                    favoriteButton.setText("unfavorited");
+                    favoriteButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            AsyncTask<Void,Void,Boolean> task= new AsyncTask<Void, Void, Boolean>() {
+                                @Override
+                                protected Boolean doInBackground(Void... voids) {
+                                    try{
+                                        mTwitter.destroyFavorite(tweetId);
+                                        return true;
+                                    }catch(TwitterException e){
 
+                                        return false;
+                                    }
 
+                                }
+                                @Override
+                                protected void onPostExecute(Boolean bool){
+                                    if(bool) showToast("お気に入りを解除しました");
+                                    else showToast("リクエストを実行できません");
+                                }
+                            };
+                            task.execute();
+                        }
+                    });
+                }else {
+                    favoriteButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
+                                @Override
+                                protected Boolean doInBackground(Void... voids) {
+                                    try {
+                                        mTwitter.createFavorite(tweetId);
+                                        return true;
+                                    } catch (TwitterException e) {
+                                        return false;
+                                    }
+
+                                }
+
+                                @Override
+                                protected void onPostExecute(Boolean bool) {
+                                    if (bool) showToast("お気に入りに登録しました");
+                                    else showToast("お気に入り登録に失敗しました\nリクエストを実行できません");
+                                }
+                            };
+                            task.execute();
+                        }
+                    });
+                }
+                
 
 
                 builder.setTitle(name.getText());

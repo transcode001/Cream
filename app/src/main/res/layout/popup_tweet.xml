@@ -16,6 +16,12 @@
         android:layout_height="wrap_content"
         android:text="retweet"
         />
+    <Button
+        android:id="@+id/button_favorite_tweet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="favorite"
+        />
 
 
 </LinearLayout>
