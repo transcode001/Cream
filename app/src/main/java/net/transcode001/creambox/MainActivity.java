@@ -76,9 +76,8 @@ public class MainActivity extends Activity {
             listView = (ListView)findViewById(R.id.listView_timeline);
             listView.setAdapter(mTweetAdapter);
             mHandler = new Handler();
-            mConfiguration = TwitterUtils.getConfigurationInstance(this);
-            mTwitter = TwitterUtils.getInstance(this);
-
+            mConfiguration = TwitterUtils.getConfigurationInstance(getApplicationContext());
+            mTwitter = TwitterUtils.getInstance(getApplicationContext());
 
             //長押しの定義はListActivityではサポート外なので
             //ツイート長押しの処理を定義
@@ -94,11 +93,11 @@ public class MainActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_tweet:
-                Intent intent = new Intent(this, TweetActivity.class);
+                Intent intent = new Intent(getApplicationContext(), TweetActivity.class);
                 startActivity(intent);
                 return true;
             case R.id.menu_search:
-                Intent intent_menu = new Intent(this,TweetSearch.class);
+                Intent intent_menu = new Intent(getApplicationContext(),TweetSearch.class);
                 startActivity(intent_menu);
                 return true;
             case R.id.reload_timeline:
@@ -154,7 +153,6 @@ public class MainActivity extends Activity {
                                 }catch(TwitterException e){
                                     return false;
                                 }
-
                             }
                             @Override
                             protected void onPostExecute(Boolean bool){
@@ -177,7 +175,6 @@ public class MainActivity extends Activity {
                                         mTwitter.destroyFavorite(tweetId);
                                         return true;
                                     }catch(TwitterException e){
-
                                         return false;
                                     }
 
@@ -204,9 +201,7 @@ public class MainActivity extends Activity {
                                     } catch (TwitterException e) {
                                         return false;
                                     }
-
                                 }
-
                                 @Override
                                 protected void onPostExecute(Boolean bool) {
                                     if (bool) showToast("お気に入りに登録しました");
@@ -217,12 +212,11 @@ public class MainActivity extends Activity {
                         }
                     });
                 }
-                
-
 
                 builder.setTitle(name.getText());
                 builder.setMessage(tv.getText());
-                builder.create().show();
+                final AlertDialog dialog = builder.create();
+                dialog.show();
 
                 return true;
             }
