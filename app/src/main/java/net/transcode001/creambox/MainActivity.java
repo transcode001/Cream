@@ -29,6 +29,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,6 +60,7 @@ public class MainActivity extends Activity {
     private ListView listView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
     private Boolean userStreamEnable=false;
+    private Boolean alertDialogEnable=false;
 
 
     @Override
@@ -127,6 +129,7 @@ public class MainActivity extends Activity {
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
 
                 final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                final AlertDialog dialog;
                 LayoutInflater li = (LayoutInflater) getApplicationContext()
                         .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -137,7 +140,7 @@ public class MainActivity extends Activity {
                 builder.setView(content);
                 TextView tv = (TextView) view.findViewById(R.id.text);
                 TextView name = (TextView) view.findViewById(R.id.name);
-
+                alertDialogEnable=false;
                 final long tweetId = mTweetAdapter.getItem(position).getId();
                 Button retweetButton = (Button) content.findViewById(R.id.button_retweet_tweet);
                 Button favoriteButton = (Button) content.findViewById(R.id.button_favorite_tweet);
@@ -158,12 +161,14 @@ public class MainActivity extends Activity {
                             protected void onPostExecute(Boolean bool){
                                 if(bool) showToast("リツイートしました");
                                 else showToast("リツイートに失敗しました\nリクエストを実行できません");
+                                //dialog.dismiss();
                             }
                         };
                         task.execute();
                     }
                 });
                 if(mTweetAdapter.getItem(position).isFavorited()){
+                    //お気に入り登録
                     favoriteButton.setText("unfavorited");
                     favoriteButton.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -183,12 +188,14 @@ public class MainActivity extends Activity {
                                 protected void onPostExecute(Boolean bool){
                                     if(bool) showToast("お気に入りを解除しました");
                                     else showToast("リクエストを実行できません");
+                                    alertDialogEnable=true;
                                 }
                             };
                             task.execute();
                         }
                     });
                 }else {
+                    //お気に入り登録
                     favoriteButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
@@ -206,6 +213,7 @@ public class MainActivity extends Activity {
                                 protected void onPostExecute(Boolean bool) {
                                     if (bool) showToast("お気に入りに登録しました");
                                     else showToast("お気に入り登録に失敗しました\nリクエストを実行できません");
+                                    alertDialogEnable=true;
                                 }
                             };
                             task.execute();
@@ -215,7 +223,7 @@ public class MainActivity extends Activity {
 
                 builder.setTitle(name.getText());
                 builder.setMessage(tv.getText());
-                final AlertDialog dialog = builder.create();
+                dialog=builder.create();
                 dialog.show();
 
                 return true;
@@ -314,6 +322,38 @@ public class MainActivity extends Activity {
 
                 @Override
                 public void onFavorite(User user, User user1, Status status) {
+                    String userName;
+                    //NotificationBuilder構築
+                    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
+                    try {
+                        userName = mTwitter.getScreenName();
+                        if(userName.equals(user.getScreenName())) {
+
+                            //アイコンを設定
+                            builder.setSmallIcon(R.drawable.images);
+                            //テキスト設定
+                            builder.setContentTitle("CreamBox");
+                            builder.setContentText("Your tweet favorited by @" + user.getScreenName());
+                            builder.setShowWhen(true);
+                            //Activityに移動(未確認)
+                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("hoge"));
+                            PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), RESULT_OK, intent, PendingIntent.FLAG_ONE_SHOT);
+                            builder.setContentIntent(contentIntent);
+                            builder.setAutoCancel(true);
+
+                            final NotificationCompat.Builder mBuilder = builder;
+                            mHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    NotificationManagerCompat manager = NotificationManagerCompat.from(getApplicationContext());
+                                    manager.notify(3, mBuilder.build());
+                                }
+                            });
+                        }
+                    }catch(TwitterException e){
+
+                    }
+
 
                 }
 
@@ -494,7 +534,7 @@ public class MainActivity extends Activity {
         private LayoutInflater mInflater;
         private Status item;
         private ImageView imageView;
-
+        private RelativeLayout relativeLayout;
         public TweetAdapter(Context context) {
             super(context, android.R.layout.simple_list_item_1);
             mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -519,6 +559,12 @@ public class MainActivity extends Activity {
                 //getUserIcon();
             }
 
+            if(!item.getURLEntities().equals(null)){
+                URLEntity[] urlEntities = item.getURLEntities();
+            }
+
+
+
             TextView name = (TextView) convertView.findViewById(R.id.name);
             name.setText(item.getUser().getName());
             TextView screenName = (TextView) convertView.findViewById(R.id.screen_name);
@@ -534,6 +580,8 @@ public class MainActivity extends Activity {
             String[] viaTexts = viaText[1].split("<",0);
 
             via.setText("via "+viaTexts[0]);
+
+
             setTweetPopup();
 
             return convertView;
