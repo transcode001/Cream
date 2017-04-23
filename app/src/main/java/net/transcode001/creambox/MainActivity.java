@@ -69,7 +69,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
 
         if (!TwitterUtils.hasAccessToken(getApplicationContext())) {
-            Intent intent = new Intent(this, Authorization.class);
+            Intent intent = new Intent(getApplicationContext(), Authorization.class);
             startActivity(intent);
             finish();
         } else {
@@ -574,6 +574,13 @@ public class MainActivity extends Activity {
 
             SmartImageView sImageView = (SmartImageView) convertView.findViewById(R.id.icon);
             sImageView.setImageUrl(item.getUser().getProfileImageURL());
+            sImageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent= new Intent(getApplicationContext(),UserProfile.class);
+                    startActivity(intent);
+                }
+            });
             TextView via=(TextView) convertView.findViewById(R.id.via);
 
             String[] viaText = item.getSource().split("<*>",-1);
@@ -583,6 +590,7 @@ public class MainActivity extends Activity {
 
 
             setTweetPopup();
+
 
             return convertView;
 

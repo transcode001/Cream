@@ -26,6 +26,9 @@
         <activity android:name=".TweetSearch">
 
         </activity>
+        <activity android:name=".UserProfile">
+
+        </activity>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />
