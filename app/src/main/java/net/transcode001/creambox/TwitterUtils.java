@@ -14,6 +14,9 @@ import twitter4j.conf.Configuration;
 import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterUtils {
+
+    private static twitter4j.Status userStatus;
+
     public static Twitter getInstance(Context context){
         String consumerKey = context.getString(R.string.consumerKey);
         String consumerSecret = context.getString(R.string.consumerSecret);
@@ -77,6 +80,14 @@ public class TwitterUtils {
 
     public static boolean hasAccessToken(Context context) {
         return loadAccessToken(context) != null;
+    }
+
+    public static void storeStatus(twitter4j.Status status){
+            userStatus=status;
+    }
+
+    public static twitter4j.Status getStatus(){
+        return userStatus;
     }
 
 }

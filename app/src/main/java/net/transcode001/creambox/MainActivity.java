@@ -577,6 +577,7 @@ public class MainActivity extends Activity {
             sImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    TwitterUtils.storeStatus(item);
                     Intent intent= new Intent(getApplicationContext(),UserProfile.class);
                     startActivity(intent);
                 }
