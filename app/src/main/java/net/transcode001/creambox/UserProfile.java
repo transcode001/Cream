@@ -46,7 +46,7 @@ public class UserProfile extends Activity {
         setContentView(R.layout.user_profile_layout);
 
         SmartImageView mSmartImageView = (SmartImageView) findViewById(R.id.user_profile_header);
-        mSmartImageView.setImageUrl(TwitterUtils.getStatus().getUser().getProfileImageURL());
+        mSmartImageView.setImageUrl(TwitterUtils.getStatus().getUser().getProfileBackgroundImageUrlHttps());
     }
 
     private void setTweetPopup(){
