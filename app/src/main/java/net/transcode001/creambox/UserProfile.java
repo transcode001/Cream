@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.List;
 
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -41,12 +42,50 @@ public class UserProfile extends Activity {
     Boolean alertDialogEnable;
     private TweetAdapter mTweetAdapter;
     private Twitter mTwitter;
+    private ListView listView;
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_profile_layout);
 
         SmartImageView mSmartImageView = (SmartImageView) findViewById(R.id.user_profile_header);
         mSmartImageView.setImageUrl(TwitterUtils.getStatus().getUser().getProfileBackgroundImageUrlHttps());
+        mTweetAdapter = new TweetAdapter(getApplicationContext());
+        listView = (ListView) findViewById(R.id.user_profile_tweet);
+        listView.setAdapter(mTweetAdapter);
+        mTwitter = TwitterUtils.getInstance(getApplicationContext());
+        loadTimeLine();
+    }
+
+    private void loadTimeLine() {
+
+        AsyncTask<Void, Void, List<Status>> task = new AsyncTask<Void, Void, List<twitter4j.Status>>() {
+            @Override
+            protected List<twitter4j.Status> doInBackground(Void... params) {
+                try {
+                    return mTwitter.getUserTimeline(TwitterUtils.getStatus().getId());
+                } catch (TwitterException e) {
+                    if(e.isCausedByNetworkIssue()){
+                        showToast("ネットワークに接続されていません");
+                    }
+                    e.printStackTrace();
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(List<twitter4j.Status> result) {
+                if (result != null) {
+                    //mTweetAdapter.clear();
+                    for (twitter4j.Status status : result) {
+                        mTweetAdapter.add(status);
+                    }
+                    //getListView().setSelection(0);
+                } else {
+                    showToast("タイムラインの取得に失敗しました");
+                }
+            }
+        };
+        task.execute();
     }
 
     private void setTweetPopup(){
