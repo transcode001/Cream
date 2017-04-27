@@ -225,7 +225,7 @@ public class UserProfile extends Activity {
                 //getUserIcon();
             }
 
-            if(!item.getURLEntities().equals(null)){
+            if(!item.getURLEntities().equals(0)){
                 URLEntity[] urlEntities = item.getURLEntities();
             }
 
@@ -233,9 +233,10 @@ public class UserProfile extends Activity {
 
             TextView name = (TextView) convertView.findViewById(R.id.name);
             name.setText(item.getUser().getName());
+            name.setTextColor(Color.BLACK);
             TextView screenName = (TextView) convertView.findViewById(R.id.screen_name);
             screenName.setText("@" + item.getUser().getScreenName());
-
+            screenName.setTextColor(Color.BLACK);
             text.setText(item.getText());
 
             SmartImageView sImageView = (SmartImageView) convertView.findViewById(R.id.icon);
@@ -249,19 +250,16 @@ public class UserProfile extends Activity {
                 }
             });
             TextView via=(TextView) convertView.findViewById(R.id.via);
-
+            via.setTextColor(Color.BLACK);
             String[] viaText = item.getSource().split("<*>",-1);
             String[] viaTexts = viaText[1].split("<",0);
 
             via.setText("via "+viaTexts[0]);
 
-
             setTweetPopup();
 
-
             return convertView;
-
-
+            
         }
 
         private Boolean getUserIcon() {
