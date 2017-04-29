@@ -535,6 +535,7 @@ public class MainActivity extends Activity {
         private Status item;
         private ImageView imageView;
         private RelativeLayout relativeLayout;
+        URLEntity[] urlEntities;
         public TweetAdapter(Context context) {
             super(context, android.R.layout.simple_list_item_1);
             mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -546,6 +547,7 @@ public class MainActivity extends Activity {
                 convertView = mInflater.inflate(R.layout.tweet_layout, null);
             }
 
+            int URLEnetryCount=0;
             //Boolean getView=Boolean.FALSE;
 
             TextView text = (TextView) convertView.findViewById(R.id.text);
@@ -559,8 +561,20 @@ public class MainActivity extends Activity {
                 //getUserIcon();
             }
 
+
+
+
             if(!item.getURLEntities().equals(null)){
-                URLEntity[] urlEntities = item.getURLEntities();
+                URLEnetryCount=item.getURLEntities().length;
+                urlEntities = item.getURLEntities();
+                switch(URLEnetryCount){
+                    case 1:
+                        convertView=mInflater.inflate(R.layout.tweet_layout_pic1,null);
+                        break;
+
+                    default:
+                        break;
+                }
             }
 
 
@@ -587,7 +601,13 @@ public class MainActivity extends Activity {
             String[] viaText = item.getSource().split("<*>",-1);
             String[] viaTexts = viaText[1].split("<",0);
 
+
             via.setText("via "+viaTexts[0]);
+
+            if(URLEnetryCount!=0){
+                SmartImageView picView = (SmartImageView) convertView.findViewById(R.id.pic1_image);
+                picView.setImageUrl(urlEntities[0].getDisplayURL());
+            }
 
 
             setTweetPopup();
