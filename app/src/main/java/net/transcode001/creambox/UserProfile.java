@@ -48,7 +48,7 @@ public class UserProfile extends Activity {
         setContentView(R.layout.user_profile_layout);
 
         SmartImageView mSmartImageView = (SmartImageView) findViewById(R.id.user_profile_header);
-        mSmartImageView.setImageUrl(TwitterUtils.getStatus().getUser().getProfileBackgroundImageUrlHttps());
+        mSmartImageView.setImageUrl(TwitterUtils.getStatus().getUser().getProfileBackgroundImageURL());
         mTweetAdapter = new TweetAdapter(getApplicationContext());
         listView = (ListView) findViewById(R.id.user_profile_tweet);
         listView.setAdapter(mTweetAdapter);
@@ -59,15 +59,17 @@ public class UserProfile extends Activity {
     private void loadTimeLine() {
 
         AsyncTask<Void, Void, List<Status>> task = new AsyncTask<Void, Void, List<twitter4j.Status>>() {
+
+            final twitter4j.Status tweet = TwitterUtils.getStatus();
             @Override
             protected List<twitter4j.Status> doInBackground(Void... params) {
                 try {
-                    return mTwitter.getUserTimeline(TwitterUtils.getStatus().getId());
+                    return mTwitter.getUserTimeline(TwitterUtils.getStatus().getUser().getScreenName());
                 } catch (TwitterException e) {
                     if(e.isCausedByNetworkIssue()){
                         showToast("ネットワークに接続されていません");
                     }
-                    e.printStackTrace();
+                    Log.d("user timeline",e.toString());
                 }
                 return null;
             }
