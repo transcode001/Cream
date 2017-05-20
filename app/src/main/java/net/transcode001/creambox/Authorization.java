@@ -57,13 +57,16 @@ public class Authorization extends Activity{
                     return mRequestToken.getAuthorizationURL();
                 } catch (TwitterException te) {
                     Log.e("AuthorizationError", te.toString());
+                    showToast("認証に失敗しました");
                     return null;
                 }
             }
 
             @Override
-            protected void onPostExecute(String url) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+            protected void onPostExecute(String url){
+                if(url!=null) {
+                    startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+                }
             }
         };
         task.execute();

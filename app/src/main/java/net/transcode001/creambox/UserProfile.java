@@ -64,12 +64,17 @@ public class UserProfile extends Activity {
             @Override
             protected List<twitter4j.Status> doInBackground(Void... params) {
                 try {
-                    return mTwitter.getUserTimeline(TwitterUtils.getStatus().getUser().getScreenName());
+                    return mTwitter.getUserTimeline(tweet.getId());
                 } catch (TwitterException e) {
                     if(e.isCausedByNetworkIssue()){
                         showToast("ネットワークに接続されていません");
                     }
                     Log.d("user timeline",e.toString());
+                    if(e.getStatusCode()==429){
+                        showToast("API規制です");
+                    }
+                } catch(NullPointerException e){
+                    
                 }
                 return null;
             }

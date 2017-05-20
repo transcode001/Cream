@@ -568,7 +568,7 @@ public class MainActivity extends Activity {
 
 
 
-            if(!item.getURLEntities().equals(null)){
+           /* if(!item.getURLEntities().equals(null)){
                 URLEntryCount=item.getURLEntities().length;
                 urlEntities = item.getURLEntities();
                 switch(URLEntryCount){
@@ -580,7 +580,8 @@ public class MainActivity extends Activity {
                         break;
                 }
             }
-
+            */
+            final twitter4j.Status mItem = item;
 
 
             TextView name = (TextView) convertView.findViewById(R.id.name);
@@ -590,12 +591,14 @@ public class MainActivity extends Activity {
 
             text.setText(item.getText());
 
+
+
             SmartImageView sImageView = (SmartImageView) convertView.findViewById(R.id.icon);
             sImageView.setImageUrl(item.getUser().getProfileImageURL());
             sImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    TwitterUtils.storeStatus(item);
+                    TwitterUtils.storeStatus(mItem);
                     Intent intent= new Intent(getApplicationContext(),UserProfile.class);
                     startActivity(intent);
                 }
