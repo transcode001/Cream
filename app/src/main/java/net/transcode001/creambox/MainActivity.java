@@ -142,6 +142,13 @@ public class MainActivity extends Activity {
                 TextView name = (TextView) view.findViewById(R.id.name);
                 alertDialogEnable=false;
                 final long tweetId = mTweetAdapter.getItem(position).getId();
+
+                builder.setTitle(name.getText());
+                builder.setMessage(tv.getText());
+                dialog=builder.create();
+                dialog.show();
+
+
                 Button retweetButton = (Button) content.findViewById(R.id.button_retweet_tweet);
                 Button favoriteButton = (Button) content.findViewById(R.id.button_favorite_tweet);
                 retweetButton.setOnClickListener(new View.OnClickListener() {
@@ -161,7 +168,7 @@ public class MainActivity extends Activity {
                             protected void onPostExecute(Boolean bool){
                                 if(bool) showToast("リツイートしました");
                                 else showToast("リツイートに失敗しました\nリクエストを実行できません");
-                                //dialog.dismiss();
+                                dialog.dismiss();
                             }
                         };
                         task.execute();
@@ -221,10 +228,7 @@ public class MainActivity extends Activity {
                     });
                 }
 
-                builder.setTitle(name.getText());
-                builder.setMessage(tv.getText());
-                dialog=builder.create();
-                dialog.show();
+
 
                 return true;
             }
@@ -532,7 +536,7 @@ public class MainActivity extends Activity {
 
     private class TweetAdapter extends ArrayAdapter<twitter4j.Status> {
         private LayoutInflater mInflater;
-        private Status item;
+        private twitter4j.Status item;
         private ImageView imageView;
         private RelativeLayout relativeLayout;
         URLEntity[] urlEntities;
@@ -547,7 +551,7 @@ public class MainActivity extends Activity {
                 convertView = mInflater.inflate(R.layout.tweet_layout, null);
             }
 
-            int URLEnetryCount=0;
+            int URLEntryCount=0;
             //Boolean getView=Boolean.FALSE;
 
             TextView text = (TextView) convertView.findViewById(R.id.text);
@@ -565,9 +569,9 @@ public class MainActivity extends Activity {
 
 
             if(!item.getURLEntities().equals(null)){
-                URLEnetryCount=item.getURLEntities().length;
+                URLEntryCount=item.getURLEntities().length;
                 urlEntities = item.getURLEntities();
-                switch(URLEnetryCount){
+                switch(URLEntryCount){
                     case 1:
                         convertView=mInflater.inflate(R.layout.tweet_layout_pic1,null);
                         break;
@@ -604,7 +608,7 @@ public class MainActivity extends Activity {
 
             via.setText("via "+viaTexts[0]);
 
-            if(URLEnetryCount!=0){
+            if(URLEntryCount!=0){
                 SmartImageView picView = (SmartImageView) convertView.findViewById(R.id.pic1_image);
                 picView.setImageUrl(urlEntities[0].getDisplayURL());
             }

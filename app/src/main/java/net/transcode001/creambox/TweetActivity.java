@@ -16,7 +16,7 @@ import twitter4j.TwitterFactory;
 public class TweetActivity extends Activity {
     private EditText mInputText;
     private Twitter mTwitter;
-    private Twitter nTwitter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
