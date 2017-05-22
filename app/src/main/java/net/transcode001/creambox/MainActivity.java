@@ -221,6 +221,7 @@ public class MainActivity extends Activity {
                                     if (bool) showToast("お気に入りに登録しました");
                                     else showToast("お気に入り登録に失敗しました\nリクエストを実行できません");
                                     alertDialogEnable=true;
+                                    dialog.dismiss();
                                 }
                             };
                             task.execute();
@@ -539,7 +540,7 @@ public class MainActivity extends Activity {
         private twitter4j.Status item;
         private ImageView imageView;
         private RelativeLayout relativeLayout;
-        URLEntity[] urlEntities;
+         MediaEntity[] mediaEntities;
         public TweetAdapter(Context context) {
             super(context, android.R.layout.simple_list_item_1);
             mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -567,22 +568,25 @@ public class MainActivity extends Activity {
 
 
 
+            URLEntryCount=item.getURLEntities().length;
 
-           /* if(!item.getURLEntities().equals(null)){
-                URLEntryCount=item.getURLEntities().length;
-                urlEntities = item.getURLEntities();
+           if(URLEntryCount!=0){
+                mediaEntities = item.getExtendedMediaEntities();
                 switch(URLEntryCount){
                     case 1:
                         convertView=mInflater.inflate(R.layout.tweet_layout_pic1,null);
+                        SmartImageView mSmartImageView=(SmartImageView) findViewById(R.id.pic1_image);
+                        mSmartImageView.setImageUrl(mediaEntities[0].getMediaURL());
                         break;
 
                     default:
                         break;
                 }
-            }
-            */
-            final twitter4j.Status mItem = item;
 
+
+            }
+
+            final twitter4j.Status mItem = item;
 
             TextView name = (TextView) convertView.findViewById(R.id.name);
             name.setText(item.getUser().getName());
@@ -611,10 +615,6 @@ public class MainActivity extends Activity {
 
             via.setText("via "+viaTexts[0]);
 
-            if(URLEntryCount!=0){
-                SmartImageView picView = (SmartImageView) convertView.findViewById(R.id.pic1_image);
-                picView.setImageUrl(urlEntities[0].getDisplayURL());
-            }
 
 
             setTweetPopup();

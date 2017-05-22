@@ -74,7 +74,7 @@ public class UserProfile extends Activity {
                         showToast("API規制です");
                     }
                 } catch(NullPointerException e){
-                    
+
                 }
                 return null;
             }
@@ -205,9 +205,10 @@ public class UserProfile extends Activity {
 
     private class TweetAdapter extends ArrayAdapter<Status> {
         private LayoutInflater mInflater;
-        private Status item;
+        public twitter4j.Status item;
         private ImageView imageView;
         private RelativeLayout relativeLayout;
+
         public TweetAdapter(Context context) {
             super(context, android.R.layout.simple_list_item_1);
             mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -246,12 +247,13 @@ public class UserProfile extends Activity {
             screenName.setTextColor(Color.BLACK);
             text.setText(item.getText());
 
+            final int mPosition = position;
             SmartImageView sImageView = (SmartImageView) convertView.findViewById(R.id.icon);
             sImageView.setImageUrl(item.getUser().getProfileImageURL());
             sImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    TwitterUtils.storeStatus(item);
+                    TwitterUtils.storeStatus(getItem(mPosition));
                     Intent intent= new Intent(getApplicationContext(),UserProfile.class);
                     startActivity(intent);
                 }
