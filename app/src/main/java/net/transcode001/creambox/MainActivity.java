@@ -332,7 +332,7 @@ public class MainActivity extends Activity {
                     NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
                     try {
                         userName = mTwitter.getScreenName();
-                        if(userName.equals(user.getScreenName())) {
+                        if(userName.equals(user1.getScreenName())) {
 
                             //アイコンを設定
                             builder.setSmallIcon(R.drawable.images);
@@ -567,19 +567,23 @@ public class MainActivity extends Activity {
             }
 
 
+            mediaEntities=item.getExtendedMediaEntities();
 
-            URLEntryCount=item.getURLEntities().length;
-
-           if(URLEntryCount!=0){
+           if(mediaEntities.length>0){
                 mediaEntities = item.getExtendedMediaEntities();
-                switch(URLEntryCount){
+                switch(mediaEntities.length){
                     case 1:
                         convertView=mInflater.inflate(R.layout.tweet_layout_pic1,null);
                         SmartImageView mSmartImageView=(SmartImageView) findViewById(R.id.pic1_image);
-                        mSmartImageView.setImageUrl(mediaEntities[0].getMediaURL());
-                        break;
+                        try {
+                            mSmartImageView.setImageUrl(mediaEntities[0].getMediaURL());
+                        }catch(NullPointerException e){
+                            showToast("画像の取得に失敗しました");
+                        }
+                            break;
 
                     default:
+                        convertView=mInflater.inflate(R.layout.tweet_layout,null);
                         break;
                 }
 

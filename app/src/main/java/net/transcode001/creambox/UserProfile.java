@@ -207,7 +207,6 @@ public class UserProfile extends Activity {
         private LayoutInflater mInflater;
         public twitter4j.Status item;
         private ImageView imageView;
-        private RelativeLayout relativeLayout;
 
         public TweetAdapter(Context context) {
             super(context, android.R.layout.simple_list_item_1);
