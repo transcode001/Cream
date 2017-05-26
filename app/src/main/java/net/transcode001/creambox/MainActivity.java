@@ -540,7 +540,7 @@ public class MainActivity extends Activity {
         private twitter4j.Status item;
         private ImageView imageView;
         private RelativeLayout relativeLayout;
-         MediaEntity[] mediaEntities;
+
         public TweetAdapter(Context context) {
             super(context, android.R.layout.simple_list_item_1);
             mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
@@ -566,15 +566,14 @@ public class MainActivity extends Activity {
                 //getUserIcon();
             }
 
-
-            mediaEntities=item.getExtendedMediaEntities();
+            MediaEntity[] mediaEntities=item.getExtendedMediaEntities();
 
            if(mediaEntities.length>0){
                 mediaEntities = item.getExtendedMediaEntities();
                 switch(mediaEntities.length){
                     case 1:
                         convertView=mInflater.inflate(R.layout.tweet_layout_pic1,null);
-                        SmartImageView mSmartImageView=(SmartImageView) findViewById(R.id.pic1_image);
+                        SmartImageView mSmartImageView=(SmartImageView) convertView.findViewById(R.id.pic1_image);
                         try {
                             mSmartImageView.setImageUrl(mediaEntities[0].getMediaURL());
                         }catch(NullPointerException e){
