@@ -568,8 +568,6 @@ public class MainActivity extends Activity {
 
             MediaEntity[] mediaEntities=item.getExtendedMediaEntities();
 
-           if(mediaEntities.length>0){
-                mediaEntities = item.getExtendedMediaEntities();
                 switch(mediaEntities.length){
                     case 1:
                         convertView=mInflater.inflate(R.layout.tweet_layout_pic1,null);
@@ -579,44 +577,46 @@ public class MainActivity extends Activity {
                         }catch(NullPointerException e){
                             showToast("画像の取得に失敗しました");
                         }
-                            break;
+                        break;
+
 
                     default:
                         convertView=mInflater.inflate(R.layout.tweet_layout,null);
+                        final twitter4j.Status mItem = item;
+                        text = (TextView) convertView.findViewById(R.id.text);
+                        TextView name = (TextView) convertView.findViewById(R.id.name);
+                        name.setText(item.getUser().getName());
+                        TextView screenName = (TextView) convertView.findViewById(R.id.screen_name);
+                        screenName.setText("@" + item.getUser().getScreenName());
+
+                        text.setText(item.getText());
+
+
+
+                        SmartImageView sImageView = (SmartImageView) convertView.findViewById(R.id.icon);
+                        sImageView.setImageUrl(item.getUser().getProfileImageURL());
+                        sImageView.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                TwitterUtils.storeStatus(mItem);
+                                Intent intent= new Intent(getApplicationContext(),UserProfile.class);
+                                startActivity(intent);
+                            }
+                        });
+                        TextView via=(TextView) convertView.findViewById(R.id.via);
+
+                        String[] viaText = item.getSource().split("<*>",-1);
+                        String[] viaTexts = viaText[1].split("<",0);
+
+
+                        via.setText("via "+viaTexts[0]);
                         break;
                 }
 
 
-            }
-
-            final twitter4j.Status mItem = item;
-
-            TextView name = (TextView) convertView.findViewById(R.id.name);
-            name.setText(item.getUser().getName());
-            TextView screenName = (TextView) convertView.findViewById(R.id.screen_name);
-            screenName.setText("@" + item.getUser().getScreenName());
-
-            text.setText(item.getText());
 
 
 
-            SmartImageView sImageView = (SmartImageView) convertView.findViewById(R.id.icon);
-            sImageView.setImageUrl(item.getUser().getProfileImageURL());
-            sImageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    TwitterUtils.storeStatus(mItem);
-                    Intent intent= new Intent(getApplicationContext(),UserProfile.class);
-                    startActivity(intent);
-                }
-            });
-            TextView via=(TextView) convertView.findViewById(R.id.via);
-
-            String[] viaText = item.getSource().split("<*>",-1);
-            String[] viaTexts = viaText[1].split("<",0);
-
-
-            via.setText("via "+viaTexts[0]);
 
 
 
