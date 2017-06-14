@@ -86,14 +86,8 @@ public class TwitterUtils {
             userStatus=status;
     }
 
-    private static twitter4j.Status sendStatus(){
-        twitter4j.Status tStatus;
-        tStatus=userStatus;
-        userStatus=null;
-        return tStatus;
-    }
 
     public static twitter4j.Status getStatus(){
-        return sendStatus();
+        return userStatus;
     }
 }

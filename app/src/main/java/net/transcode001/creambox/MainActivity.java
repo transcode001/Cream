@@ -548,9 +548,8 @@ public class MainActivity extends Activity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.tweet_layout, null);
-            }
+
+            convertView = mInflater.inflate(R.layout.tweet_layout, null);
 
             int URLEntryCount=0;
             //Boolean getView=Boolean.FALSE;
@@ -581,7 +580,6 @@ public class MainActivity extends Activity {
 
 
                     default:
-                        convertView=mInflater.inflate(R.layout.tweet_layout,null);
                         final twitter4j.Status mItem = item;
                         text = (TextView) convertView.findViewById(R.id.text);
                         TextView name = (TextView) convertView.findViewById(R.id.name);
@@ -613,18 +611,9 @@ public class MainActivity extends Activity {
                         break;
                 }
 
-
-
-
-
-
-
-
             setTweetPopup();
 
-
             return convertView;
-
 
         }
 
