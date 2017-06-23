@@ -600,6 +600,7 @@ public class MainActivity extends Activity {
                             public void onClick(View view) {
                                 //TwitterUtils.storeStatus(mItem);
                                 Intent intent= new Intent(getApplicationContext(),UserProfile.class);
+                                //putExtra(name,value) value<-primitive のみ？
                                 intent.putExtra("Status",getItem(position).getUser().getId());
                                 startActivity(intent);
                             }
@@ -615,9 +616,7 @@ public class MainActivity extends Activity {
                 }
 
             setTweetPopup();
-
             return convertView;
-
         }
 
         private Boolean getUserIcon() {

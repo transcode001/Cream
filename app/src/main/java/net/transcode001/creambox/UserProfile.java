@@ -47,12 +47,12 @@ public class UserProfile extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_profile_layout);
 
-        SmartImageView mSmartImageView = (SmartImageView) findViewById(R.id.user_profile_header);
-        //mSmartImageView.setImageUrl(mTwitter.getUsergetProfileBackgroundImageURL());
+
         mTweetAdapter = new TweetAdapter(getApplicationContext());
         listView = (ListView) findViewById(R.id.user_profile_tweet);
         listView.setAdapter(mTweetAdapter);
         mTwitter = TwitterUtils.getInstance(getApplicationContext());
+
         loadTimeLine();
     }
 
@@ -231,6 +231,7 @@ public class UserProfile extends Activity {
                 text.setTextColor(Color.BLACK);
                 //imageView = (ImageView)convertView.findViewById(R.id.icon);
                 //getUserIcon();
+                setUserProfileVIew(getItem(position));
             }
 
             if(!item.getURLEntities().equals(0)){
@@ -253,7 +254,10 @@ public class UserProfile extends Activity {
             sImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    TwitterUtils.storeStatus(getItem(mPosition));
+                    if(getItem(mPosition).isRetweet()) {
+                    }else {
+                        TwitterUtils.storeStatus(getItem(mPosition));
+                    }
                     Intent intent= new Intent(getApplicationContext(),UserProfile.class);
                     startActivity(intent);
                 }
@@ -304,6 +308,13 @@ public class UserProfile extends Activity {
     }
     private void showToast(String text) {
         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
+    }
+
+    private void setUserProfileVIew(twitter4j.Status status){
+        SmartImageView mSmartImageView = (SmartImageView) findViewById(R.id.user_profile_header);
+        SmartImageView lSmartImageView = (SmartImageView) findViewById(R.id.user_profile_icon);
+        lSmartImageView.setImageUrl(status.getUser().getProfileImageURL());
+        mSmartImageView.setImageUrl(status.getUser().getProfileBannerURL());
     }
 
 }
