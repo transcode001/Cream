@@ -148,7 +148,7 @@ public class MainActivity extends Activity {
                 dialog=builder.create();
                 dialog.show();
 
-
+                //リツイート
                 Button retweetButton = (Button) content.findViewById(R.id.button_retweet_tweet);
                 Button favoriteButton = (Button) content.findViewById(R.id.button_favorite_tweet);
                 retweetButton.setOnClickListener(new View.OnClickListener() {
@@ -174,6 +174,8 @@ public class MainActivity extends Activity {
                         task.execute();
                     }
                 });
+
+                //お気に入り
                 if(mTweetAdapter.getItem(position).isFavorited()){
                     //お気に入り登録
                     favoriteButton.setText("unfavorited");
@@ -547,7 +549,7 @@ public class MainActivity extends Activity {
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
 
             convertView = mInflater.inflate(R.layout.tweet_layout, null);
 
@@ -596,8 +598,9 @@ public class MainActivity extends Activity {
                         sImageView.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                TwitterUtils.storeStatus(mItem);
+                                //TwitterUtils.storeStatus(mItem);
                                 Intent intent= new Intent(getApplicationContext(),UserProfile.class);
+                                intent.putExtra("Status",getItem(position).getUser().getId());
                                 startActivity(intent);
                             }
                         });
