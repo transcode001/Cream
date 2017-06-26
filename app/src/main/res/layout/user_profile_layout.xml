@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:layout_alignParentStart="true"
+        android:scaleType="centerCrop"
         android:src="@mipmap/ic_launcher" />
 
     <com.loopj.android.image.SmartImageView
