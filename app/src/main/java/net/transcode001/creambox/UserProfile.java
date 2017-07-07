@@ -45,6 +45,7 @@ public class UserProfile extends Activity {
     private Twitter mTwitter;
     private ListView listView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
+
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_profile_layout);
@@ -58,8 +59,14 @@ public class UserProfile extends Activity {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                loadTimeLine();
-                mSwipeRefreshLayout.setRefreshing(false);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        mTweetAdapter.clear();
+                        loadTimeLine();
+                        mSwipeRefreshLayout.setRefreshing(false);
+                    }
+                },3000);
             }
         });
 
