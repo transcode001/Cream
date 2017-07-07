@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +44,7 @@ public class UserProfile extends Activity {
     private TweetAdapter mTweetAdapter;
     private Twitter mTwitter;
     private ListView listView;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_profile_layout);
@@ -52,6 +54,14 @@ public class UserProfile extends Activity {
         listView = (ListView) findViewById(R.id.user_profile_tweet);
         listView.setAdapter(mTweetAdapter);
         mTwitter = TwitterUtils.getInstance(getApplicationContext());
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_profile);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                loadTimeLine();
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        });
 
         loadTimeLine();
     }
@@ -254,11 +264,15 @@ public class UserProfile extends Activity {
             sImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(getItem(mPosition).isRetweet()) {
-                    }else {
-                        TwitterUtils.storeStatus(getItem(mPosition));
-                    }
                     Intent intent= new Intent(getApplicationContext(),UserProfile.class);
+                    if(getItem(mPosition).isRetweet()) {
+                        intent.putExtra("Status",getItem(mPosition).getRetweetedStatus().getUser().getId());
+                    }else {
+                        intent.putExtra("Status",getItem(mPosition).getUser().getId());
+                    }
+
+
+
                     startActivity(intent);
                 }
             });

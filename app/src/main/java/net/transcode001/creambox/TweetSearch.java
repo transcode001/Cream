@@ -31,9 +31,6 @@ import twitter4j.Status;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
-/**
- * Created by kei on 17/02/06.
- */
 
 public class TweetSearch extends Activity {
 

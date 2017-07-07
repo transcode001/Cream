@@ -601,7 +601,8 @@ public class MainActivity extends Activity {
                                 //TwitterUtils.storeStatus(mItem);
                                 Intent intent= new Intent(getApplicationContext(),UserProfile.class);
                                 //putExtra(name,value) value<-primitive のみ？
-                                intent.putExtra("Status",getItem(position).getUser().getId());
+                                if(getItem(position).isRetweet()) intent.putExtra("Status",getItem(position).getRetweetedStatus().getUser().getId());
+                                else intent.putExtra("Status",getItem(position).getUser().getId());
                                 startActivity(intent);
                             }
                         });
@@ -619,7 +620,7 @@ public class MainActivity extends Activity {
             return convertView;
         }
 
-        private Boolean getUserIcon() {
+        private Boolean getUserIcon(View convertView) {
             AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
                 @Override
                 protected Boolean doInBackground(Void... params) {
