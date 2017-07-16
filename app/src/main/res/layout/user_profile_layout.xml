@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="8dp">
 
     <com.loopj.android.image.SmartImageView
@@ -14,18 +15,20 @@
 
     <com.loopj.android.image.SmartImageView
         android:id="@+id/user_profile_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="160dp"
-        android:layout_marginTop="40dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:foregroundGravity="center"
-        android:src="@mipmap/ic_launcher" />
+        android:src="@mipmap/ic_launcher"
+        android:layout_above="@+id/user_profile_tab"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="32dp" />
 
-    <TabWidget
+    <!--<android.support.design.widget.TabLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/user_profile_tab"
-        android:layout_below="@id/user_profile_header" />
+        android:layout_below="@id/user_profile_header"
+        /> -->
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/refresh_profile"
@@ -43,7 +46,7 @@
         android:layout_width="wrap_content"
         android:layout_height="15dp"
         android:text="UserName"
-        android:layout_below="@+id/user_profile_icon"
+        android:layout_above="@+id/user_profile_tab"
         android:layout_centerHorizontal="true" />
 
 

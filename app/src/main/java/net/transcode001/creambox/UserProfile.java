@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.TabLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,7 +21,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,11 +66,19 @@ public class UserProfile extends Activity {
                         loadTimeLine();
                         mSwipeRefreshLayout.setRefreshing(false);
                     }
-                },3000);
+                },1000);
             }
         });
 
+        TabLayout tabLayout=(TabLayout) findViewById(R.id.user_profile_tab);
+        tabLayout.addTab(tabLayout.newTab().setText("test1"));
+        //tabLayout.addTab(tabLayout.newTab().setText("test2"));
+        setTabContent();
         loadTimeLine();
+    }
+
+    private void setTabContent(){
+
     }
 
     private void loadTimeLine() {
@@ -78,7 +86,7 @@ public class UserProfile extends Activity {
         AsyncTask<Void, Void, List<Status>> task = new AsyncTask<Void, Void, List<twitter4j.Status>>() {
             Intent i=getIntent();
             final long userId=i.getLongExtra("Status",0);
-            //inal twitter4j.Status tweet=m;
+            //final twitter4j.Status tweet=m;
             @Override
             protected List<twitter4j.Status> doInBackground(Void... params) {
                 try {
