@@ -533,7 +533,7 @@ public class MainActivity extends Activity {
 
     }
 
-    private class TweetAdapter extends ArrayAdapter<twitter4j.Status> {
+    /*private class TweetAdapter extends ArrayAdapter<twitter4j.Status> {
         private LayoutInflater mInflater;
         private twitter4j.Status item;
         private ImageView imageView;
@@ -646,6 +646,6 @@ public class MainActivity extends Activity {
             return true;
         }
 
-    }
+    }*/
 
 }

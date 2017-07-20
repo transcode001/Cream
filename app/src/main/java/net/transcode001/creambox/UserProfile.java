@@ -229,7 +229,7 @@ public class UserProfile extends Activity {
         });
     }
 
-    private class TweetAdapter extends ArrayAdapter<Status> {
+    /*private class TweetAdapter extends ArrayAdapter<Status> {
         private LayoutInflater mInflater;
         public twitter4j.Status item;
         private ImageView imageView;
@@ -334,7 +334,9 @@ public class UserProfile extends Activity {
             return true;
         }
 
-    }
+    }*/
+
+
     private void showToast(String text) {
         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
     }
