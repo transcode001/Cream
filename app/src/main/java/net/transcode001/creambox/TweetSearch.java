@@ -89,16 +89,16 @@ public class TweetSearch extends Activity {
     private void searchWord(twitter4j.Query query){
         final twitter4j.Query mquery=query;
         mAdapter.clear();
-        System.out.println("Before asyncTask\n");
+        //System.out.println("Before asyncTask\n");
         final Handler mHandler = new Handler();
         AsyncTask<Void,Void,QueryResult> task=new AsyncTask<Void, Void, QueryResult>() {
             @Override
             protected QueryResult doInBackground(Void... voids) {
                 try{
-                    System.out.println("hoge");
+                    //System.out.println("hoge");
                     final QueryResult result = mTwitter.search(mquery);
-                    System.out.println("Insert query result\n");
-                    System.out.println("Insert results\n");
+                    //System.out.println("Insert query result\n");
+                    //System.out.println("Insert results\n");
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -126,84 +126,5 @@ public class TweetSearch extends Activity {
 
 
 
-    private class TweetAdapter extends ArrayAdapter<twitter4j.Status> {
-        private LayoutInflater mInflater;
-        private URL url;
-        private InputStream mStream;
-        private Bitmap bmp;
-        private ImageView imageView;
-        private Status item;
-        private ListView lv;
 
-
-
-        public TweetAdapter(Context context) {
-            super(context, android.R.layout.simple_list_item_1);
-            mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                convertView = mInflater.inflate(R.layout.tweet_layout, null);
-            }
-
-
-            //imageView = (ImageView) convertView.findViewById(R.id.icon);
-            //Boolean getView=Boolean.FALSE;
-
-            //getUserIcon();
-
-
-            item = getItem(position);
-            TextView name = (TextView) convertView.findViewById(R.id.name);
-            name.setText(item.getUser().getName());
-            TextView screenName = (TextView) convertView.findViewById(R.id.screen_name);
-            screenName.setText("@" + item.getUser().getScreenName());
-            TextView text = (TextView) convertView.findViewById(R.id.text);
-            text.setText(item.getText());
-            SmartImageView sImageView = (SmartImageView) convertView.findViewById(R.id.icon);
-            sImageView.setImageUrl(item.getUser().getProfileImageURL());
-
-            TextView via=(TextView) convertView.findViewById(R.id.via);
-
-            String[] viaText = item.getSource().split("<*>",-1);
-            String[] viaTexts = viaText[1].split("<",0);
-
-            via.setText("via "+viaTexts[0]);
-            return convertView;
-
-
-        }
-
-        /*private Boolean getUserIcon() {
-            AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
-                @Override
-                protected Boolean doInBackground(Void... params) {
-                    try {
-                        url = new URL(item.getUser().getProfileImageURL());
-                        mStream = url.openStream();
-                        bmp = BitmapFactory.decodeStream(mStream);
-                        //imageView.setImageBitmap(bmp);
-                        return true;
-                    } catch (MalformedURLException e) {
-                        Log.e("MalformedURLException", e.toString());
-                        return false;
-                    } catch (IOException e) {
-                        Log.e("IOException", e.toString());
-                        return false;
-                    }
-                }
-                @Override
-                protected void onPostExecute(Boolean bool) {
-                    if (bool == Boolean.TRUE) {
-                        imageView.setImageBitmap(bmp);
-                    }
-                }
-            };
-            task.execute();
-            return true;
-        }*/
-
-    }
 }
