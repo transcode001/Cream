@@ -28,9 +28,6 @@ import java.net.URL;
 import twitter4j.MediaEntity;
 import twitter4j.Status;
 
-/**
- * Created by kei on 17/07/20.
- */
 
 public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
         private LayoutInflater mInflater;

@@ -86,31 +86,27 @@ public class TweetSearch extends Activity {
 
     }
 
-    private void searchWord(twitter4j.Query query){
-        final twitter4j.Query mquery=query;
+    private void searchWord(twitter4j.Query query) {
+        final twitter4j.Query mquery = query;
         mAdapter.clear();
-        //System.out.println("Before asyncTask\n");
         final Handler mHandler = new Handler();
-        AsyncTask<Void,Void,QueryResult> task=new AsyncTask<Void, Void, QueryResult>() {
+        AsyncTask<Void, Void, QueryResult> task = new AsyncTask<Void, Void, QueryResult>() {
             @Override
             protected QueryResult doInBackground(Void... voids) {
-                try{
-                    //System.out.println("hoge");
+                try {
                     final QueryResult result = mTwitter.search(mquery);
-                    //System.out.println("Insert query result\n");
-                    //System.out.println("Insert results\n");
                     mHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            for(twitter4j.Status status : result.getTweets()){
-                                mAdapter.insert(status,0);
+                            for (twitter4j.Status status : result.getTweets()) {
+                                mAdapter.insert(status, 0);
                                 System.out.println(result.getTweets().toString());
                             }
                         }
                     });
 
-                }catch(TwitterException e){
-                    Log.e("Failed to search method",e.toString());
+                } catch (TwitterException e) {
+                    Log.e("Failed to search method", e.toString());
                 }
 
                 return null;
@@ -119,11 +115,7 @@ public class TweetSearch extends Activity {
 
         task.execute();
 
-
-
     }
-
-
 
 
 
