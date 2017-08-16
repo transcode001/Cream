@@ -18,6 +18,8 @@ import android.widget.TextView;
 
 import com.loopj.android.image.SmartImageView;
 
+import net.transcode001.creambox.Utils.IconCacheUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -33,7 +35,6 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
         private InputStream mStream;
         private Bitmap bmp;
         private ImageView imageView;
-        private Status item;
         private ListView lv;
         private RecyclerView.ViewHolder holder;
 
@@ -55,7 +56,7 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
             //Boolean getView=Boolean.FALSE;
 
             //getUserIcon();
-            item = getItem(position);
+            Status item;
             TextView text = (TextView) convertView.findViewById(R.id.text);
             if(getItem(position).isRetweet()){
                 item=getItem(position).getRetweetedStatus();
@@ -77,7 +78,10 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
 
             //imageView = (ImageView)convertView.findViewById(R.id.icon);
 
-            getUserIcon(item,convertView);
+            Bitmap bmps = IconCacheUtils.getIcon((getItem(position).isRetweet()) ?
+                    getItem(position).getRetweetedStatus().getUser().getScreenName():getItem(position).getUser().getScreenName());
+            if(bmps==null) getUserIcon(item,convertView,item.getUser().getScreenName());
+            else ((ImageView)convertView.findViewById(R.id.icon)).setImageBitmap(bmps);
             TextView via=(TextView) convertView.findViewById(R.id.via);
 
             String[] viaText = item.getSource().split("<*>",-1);
@@ -89,9 +93,10 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
 
         }
 
-        private Boolean getUserIcon(twitter4j.Status status, View view) {
+        private Boolean getUserIcon(twitter4j.Status status, View view,String userScreenName) {
             final twitter4j.Status userStatus = status;
             final View convertView = view;
+            final String screenName = userScreenName;
             AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
                 @Override
                 protected Boolean doInBackground(Void... params) {
@@ -115,6 +120,7 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
                     if (bool == Boolean.TRUE) {
                         //if(tag.equals(imageView.getTag()))
                         ((ImageView)convertView.findViewById(R.id.icon)).setImageBitmap(bmp);
+                        IconCacheUtils.setIcon(screenName,bmp);
                         //imageView.setImageBitmap(bmp);
                     }
                 }
