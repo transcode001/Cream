@@ -6,7 +6,7 @@
     >
 
 
-    <com.loopj.android.image.SmartImageView
+    <ImageView
         android:id="@+id/icon"
         android:layout_width="40dp"
         android:layout_height="40dp"
@@ -39,7 +39,6 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/name"
         android:layout_below="@+id/name"
-        android:textColor="#000000"
         android:ellipsize="none"/>
     <TextView
         android:id="@+id/via"

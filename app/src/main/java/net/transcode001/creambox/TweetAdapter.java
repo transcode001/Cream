@@ -2,12 +2,11 @@ package net.transcode001.creambox;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
-import android.os.Handler;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.loopj.android.image.SmartImageView;
@@ -37,6 +35,7 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
         private ImageView imageView;
         private Status item;
         private ListView lv;
+        private RecyclerView.ViewHolder holder;
 
 
 
@@ -56,18 +55,29 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
             //Boolean getView=Boolean.FALSE;
 
             //getUserIcon();
-
-
             item = getItem(position);
+            TextView text = (TextView) convertView.findViewById(R.id.text);
+            if(getItem(position).isRetweet()){
+                item=getItem(position).getRetweetedStatus();
+                text.setTextColor(Color.rgb(0,100,0));
+            }else{
+                item = getItem(position);
+                text.setTextColor(Color.BLACK);
+                //getUserIcon(getItem(position));
+            }
+
+
             TextView name = (TextView) convertView.findViewById(R.id.name);
             name.setText(item.getUser().getName());
             TextView screenName = (TextView) convertView.findViewById(R.id.screen_name);
             screenName.setText("@" + item.getUser().getScreenName());
-            TextView text = (TextView) convertView.findViewById(R.id.text);
             text.setText(item.getText());
-            SmartImageView sImageView = (SmartImageView) convertView.findViewById(R.id.icon);
-            sImageView.setImageUrl(item.getUser().getProfileImageURL());
+            //SmartImageView sImageView = (SmartImageView) convertView.findViewById(R.id.icon);
+            //sImageView.setImageUrl(item.getUser().getProfileImageURL());
 
+            //imageView = (ImageView)convertView.findViewById(R.id.icon);
+
+            getUserIcon(item,convertView);
             TextView via=(TextView) convertView.findViewById(R.id.via);
 
             String[] viaText = item.getSource().split("<*>",-1);
@@ -79,14 +89,17 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
 
         }
 
-        /*private Boolean getUserIcon() {
+        private Boolean getUserIcon(twitter4j.Status status, View view) {
+            final twitter4j.Status userStatus = status;
+            final View convertView = view;
             AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
                 @Override
                 protected Boolean doInBackground(Void... params) {
                     try {
-                        url = new URL(item.getUser().getProfileImageURL());
+                        url = new URL(userStatus.getUser().getProfileImageURL());
                         mStream = url.openStream();
                         bmp = BitmapFactory.decodeStream(mStream);
+                        System.out.println("Reading...");
                         //imageView.setImageBitmap(bmp);
                         return true;
                     } catch (MalformedURLException e) {
@@ -100,12 +113,14 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
                 @Override
                 protected void onPostExecute(Boolean bool) {
                     if (bool == Boolean.TRUE) {
-                        imageView.setImageBitmap(bmp);
+                        //if(tag.equals(imageView.getTag()))
+                        ((ImageView)convertView.findViewById(R.id.icon)).setImageBitmap(bmp);
+                        //imageView.setImageBitmap(bmp);
                     }
                 }
             };
             task.execute();
             return true;
-        }*/
+        }
 
 }
