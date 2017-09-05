@@ -34,8 +34,12 @@ import android.widget.Toast;
 
 import com.loopj.android.image.SmartImageView;
 
+import net.transcode001.creambox.Utils.ContextUtils;
+import net.transcode001.creambox.Utils.IconCacheUtils;
+
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.CookieHandler;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Collections;
@@ -82,6 +86,10 @@ public class MainActivity extends Activity {
 
             loadTimeLine();
             streamTimeLine();
+            setTweetPopup();
+
+            ContextUtils conUtils = new ContextUtils(getApplicationContext());
+
         }
 
 
@@ -119,6 +127,8 @@ public class MainActivity extends Activity {
         return true;
     }
 
+
+
     private void setTweetPopup(){
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
@@ -143,6 +153,7 @@ public class MainActivity extends Activity {
                 builder.setMessage(tv.getText());
                 dialog=builder.create();
                 dialog.show();
+
 
                 //リツイート
                 Button retweetButton = (Button) content.findViewById(R.id.button_retweet_tweet);

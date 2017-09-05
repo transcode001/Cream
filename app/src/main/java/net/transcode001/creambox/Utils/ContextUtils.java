@@ -4,6 +4,7 @@ package net.transcode001.creambox.Utils;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -17,9 +18,13 @@ import net.transcode001.creambox.TwitterUtils;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 
-public class PopupUtils {
- public PopupUtils(Context context){
-
-
+public class ContextUtils {
+ public Context context;
+ public ContextUtils(Context context){
+     this.context = context;
  }
+ public Context getApplicationContext(){
+  return context;
+ }
+
 }

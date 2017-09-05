@@ -2,6 +2,7 @@ package net.transcode001.creambox;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 
 import com.loopj.android.image.SmartImageView;
 
+import net.transcode001.creambox.Utils.ContextUtils;
 import net.transcode001.creambox.Utils.IconCacheUtils;
 
 import java.io.IOException;
@@ -37,12 +39,14 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
         private ImageView imageView;
         private ListView lv;
         private RecyclerView.ViewHolder holder;
+        private ContextUtils contUtils;
 
 
 
         public TweetAdapter(Context context) {
             super(context, android.R.layout.simple_list_item_1);
             mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+            contUtils = new ContextUtils(context);
         }
 
         @Override
@@ -68,6 +72,8 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
             }
 
 
+
+
             TextView name = (TextView) convertView.findViewById(R.id.name);
             name.setText(item.getUser().getName());
             TextView screenName = (TextView) convertView.findViewById(R.id.screen_name);
@@ -82,6 +88,19 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
                     getItem(position).getRetweetedStatus().getUser().getScreenName():getItem(position).getUser().getScreenName());
             if(bmps==null) getUserIcon(item,convertView,item.getUser().getScreenName());
             else ((ImageView)convertView.findViewById(R.id.icon)).setImageBitmap(bmps);
+
+            final int p = position;
+            ImageView userIcon = (ImageView) convertView.findViewById(R.id.icon);
+            userIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(contUtils.getApplicationContext(),UserProfile.class);
+                    if(getItem(p).isRetweet()) intent.putExtra("Status",getItem(p).getRetweetedStatus().getUser().getId());
+                    else intent.putExtra("Status",getItem(p).getUser().getId());
+                    contUtils.getApplicationContext().startActivity(intent);
+                }
+            });
+
             TextView via=(TextView) convertView.findViewById(R.id.via);
 
             String[] viaText = item.getSource().split("<*>",-1);
@@ -89,7 +108,6 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
 
             via.setText("via "+viaTexts[0]);
             return convertView;
-
 
         }
 
@@ -104,7 +122,6 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
                         url = new URL(userStatus.getUser().getProfileImageURL());
                         mStream = url.openStream();
                         bmp = BitmapFactory.decodeStream(mStream);
-                        System.out.println("Reading...");
                         //imageView.setImageBitmap(bmp);
                         return true;
                     } catch (MalformedURLException e) {

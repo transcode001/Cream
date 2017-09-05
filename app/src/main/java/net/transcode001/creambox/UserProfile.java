@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Objects;
 
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -45,7 +46,7 @@ public class UserProfile extends Activity {
     private Twitter mTwitter;
     private ListView listView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-
+    private Status content;
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_profile_layout);
@@ -71,9 +72,12 @@ public class UserProfile extends Activity {
         });
 
         TabLayout tabLayout=(TabLayout) findViewById(R.id.user_profile_tab);
-        tabLayout.addTab(tabLayout.newTab().setText("test1"));
+        //tabLayout.addTab(tabLayout.newTab().setText("test1"));
         //tabLayout.addTab(tabLayout.newTab().setText("test2"));
-        setTabContent();
+
+
+        setTweetPopup();
+        if(content!=null) setUserProfileVIew(content);
         loadTimeLine();
     }
 
@@ -110,6 +114,7 @@ public class UserProfile extends Activity {
                 if (result != null) {
                     //mTweetAdapter.clear();
                     for (twitter4j.Status status : result) {
+                        if(content==null) content = status;
                         mTweetAdapter.add(status);
                     }
                     //getListView().setSelection(0);
