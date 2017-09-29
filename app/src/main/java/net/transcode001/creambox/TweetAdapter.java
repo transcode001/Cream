@@ -89,18 +89,6 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
             if(bmps==null) getUserIcon(item,convertView,item.getUser().getScreenName());
             else ((ImageView)convertView.findViewById(R.id.icon)).setImageBitmap(bmps);
 
-            final int p = position;
-            ImageView userIcon = (ImageView) convertView.findViewById(R.id.icon);
-            userIcon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Intent intent = new Intent(contUtils.getApplicationContext(),UserProfile.class);
-                    if(getItem(p).isRetweet()) intent.putExtra("Status",getItem(p).getRetweetedStatus().getUser().getId());
-                    else intent.putExtra("Status",getItem(p).getUser().getId());
-                    contUtils.getApplicationContext().startActivity(intent);
-                }
-            });
-
             TextView via=(TextView) convertView.findViewById(R.id.via);
 
             String[] viaText = item.getSource().split("<*>",-1);

@@ -71,7 +71,7 @@ public class UserProfile extends Activity {
             }
         });
 
-        TabLayout tabLayout=(TabLayout) findViewById(R.id.user_profile_tab);
+        //TabLayout tabLayout=(TabLayout) findViewById(R.id.user_profile_tab);
         //tabLayout.addTab(tabLayout.newTab().setText("test1"));
         //tabLayout.addTab(tabLayout.newTab().setText("test2"));
 
@@ -81,9 +81,6 @@ public class UserProfile extends Activity {
         loadTimeLine();
     }
 
-    private void setTabContent(){
-
-    }
 
     private void loadTimeLine() {
 

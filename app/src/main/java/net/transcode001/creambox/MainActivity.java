@@ -48,7 +48,6 @@ import java.util.List;
 import twitter4j.*;
 import twitter4j.conf.Configuration;
 
-
 public class MainActivity extends Activity {
 
 
@@ -130,6 +129,22 @@ public class MainActivity extends Activity {
 
 
     private void setTweetPopup(){
+        ImageView userIcon = (ImageView)findViewById(R.id.icon);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final int pos = position;
+
+                Intent intent = new Intent(getApplicationContext(),UserProfile.class);
+                if(mTweetAdapter.getItem(pos).isRetweet())
+                    intent.putExtra("Status",mTweetAdapter.getItem(pos).getRetweetedStatus().getUser().getId());
+                else
+                    intent.putExtra("Status",mTweetAdapter.getItem(pos).getUser().getId());
+                startActivity(intent);
+            }
+        });
+
+
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -242,6 +257,9 @@ public class MainActivity extends Activity {
         });
     }
 
+    private void setIndentByClicking(){
+
+    }
 
     private void loadTimeLine() {
 
@@ -578,7 +596,7 @@ public class MainActivity extends Activity {
                     case 1:
                         convertView=mInflater.inflate(R.layout.tweet_layout_pic1,null);
                         SmartImageView mSmartImageView=(SmartImageView) convertView.findViewById(R.id.pic1_image);
-                        try {
+                        try {==
                             mSmartImageView.setImageUrl(mediaEntities[0].getMediaURL());
                         }catch(NullPointerException e){
                             showToast("画像の取得に失敗しました");
