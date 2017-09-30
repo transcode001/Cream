@@ -124,6 +124,21 @@ public class UserProfile extends Activity {
     }
 
     private void setTweetPopup(){
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                final int pos = position;
+
+                Intent intent = new Intent(getApplicationContext(),UserProfile.class);
+                if(mTweetAdapter.getItem(pos).isRetweet())
+                    intent.putExtra("Status",mTweetAdapter.getItem(pos).getRetweetedStatus().getUser().getId());
+                else
+                    intent.putExtra("Status",mTweetAdapter.getItem(pos).getUser().getId());
+                startActivity(intent);
+            }
+        });
+
         new ListView(getApplicationContext()).setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
