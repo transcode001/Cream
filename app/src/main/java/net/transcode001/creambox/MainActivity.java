@@ -5,9 +5,6 @@ import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,32 +13,20 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.app.ActionBar;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.loopj.android.image.SmartImageView;
-
 import net.transcode001.creambox.Utils.ContextUtils;
-import net.transcode001.creambox.Utils.IconCacheUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.CookieHandler;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
@@ -257,9 +242,6 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void setIndentByClicking(){
-
-    }
 
     private void loadTimeLine() {
 
@@ -559,120 +541,5 @@ public class MainActivity extends Activity {
         }
 
     }
-
-    /*private class TweetAdapter extends ArrayAdapter<twitter4j.Status> {
-        private LayoutInflater mInflater;
-        private twitter4j.Status item;
-        private ImageView imageView;
-        private RelativeLayout relativeLayout;
-
-        public TweetAdapter(Context context) {
-            super(context, android.R.layout.simple_list_item_1);
-            mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-
-            convertView = mInflater.inflate(R.layout.tweet_layout, null);
-
-            int URLEntryCount=0;
-            //Boolean getView=Boolean.FALSE;
-
-            TextView text = (TextView) convertView.findViewById(R.id.text);
-            if(getItem(position).isRetweet()){
-                item=getItem(position).getRetweetedStatus();
-                text.setTextColor(Color.rgb(0,100,0));
-            }else{
-                item = getItem(position);
-                text.setTextColor(Color.BLACK);
-                //imageView = (ImageView)convertView.findViewById(R.id.icon);
-                //getUserIcon();
-            }
-
-            MediaEntity[] mediaEntities=item.getExtendedMediaEntities();
-
-                switch(mediaEntities.length){
-                    case 1:
-                        convertView=mInflater.inflate(R.layout.tweet_layout_pic1,null);
-                        SmartImageView mSmartImageView=(SmartImageView) convertView.findViewById(R.id.pic1_image);
-                        try {==
-                            mSmartImageView.setImageUrl(mediaEntities[0].getMediaURL());
-                        }catch(NullPointerException e){
-                            showToast("画像の取得に失敗しました");
-                        }
-                        break;
-
-
-                    default:
-                        final twitter4j.Status mItem = item;
-                        text = (TextView) convertView.findViewById(R.id.text);
-                        TextView name = (TextView) convertView.findViewById(R.id.name);
-                        name.setText(item.getUser().getName());
-                        TextView screenName = (TextView) convertView.findViewById(R.id.screen_name);
-                        screenName.setText("@" + item.getUser().getScreenName());
-
-                        text.setText(item.getText());
-
-
-
-                        SmartImageView sImageView = (SmartImageView) convertView.findViewById(R.id.icon);
-                        sImageView.setImageUrl(item.getUser().getProfileImageURL());
-                        sImageView.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-                                //TwitterUtils.storeStatus(mItem);
-                                Intent intent= new Intent(getApplicationContext(),UserProfile.class);
-                                //putExtra(name,value) value<-primitive のみ？
-                                if(getItem(position).isRetweet()) intent.putExtra("Status",getItem(position).getRetweetedStatus().getUser().getId());
-                                else intent.putExtra("Status",getItem(position).getUser().getId());
-                                startActivity(intent);
-                            }
-                        });
-                        TextView via=(TextView) convertView.findViewById(R.id.via);
-
-                        String[] viaText = item.getSource().split("<*>",-1);
-                        String[] viaTexts = viaText[1].split("<",0);
-
-
-                        via.setText("via "+viaTexts[0]);
-                        break;
-                }
-
-            setTweetPopup();
-            return convertView;
-        }
-
-        private Boolean getUserIcon(View convertView) {
-            AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
-                @Override
-                protected Boolean doInBackground(Void... params) {
-                    try {
-                        URL url = new URL(item.getUser().getProfileImageURL());
-                        InputStream mStream = url.openStream();
-                        final Bitmap bmp = BitmapFactory.decodeStream(mStream);
-                        mHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                imageView.setImageBitmap(bmp);
-                            }
-                        });
-                        return true;
-                    } catch (MalformedURLException e) {
-                        Log.e("MalformedURLException", e.toString());
-                        return false;
-                    } catch (IOException e) {
-                        Log.e("IOException", e.toString());
-                        return false;
-                    }
-
-                }
-
-            };
-            task.execute();
-            return true;
-        }
-
-    }*/
 
 }
