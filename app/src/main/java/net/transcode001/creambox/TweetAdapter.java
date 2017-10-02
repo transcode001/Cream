@@ -2,7 +2,6 @@ package net.transcode001.creambox;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -79,10 +78,6 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
             TextView screenName = (TextView) convertView.findViewById(R.id.screen_name);
             screenName.setText("@" + item.getUser().getScreenName());
             text.setText(item.getText());
-            //SmartImageView sImageView = (SmartImageView) convertView.findViewById(R.id.icon);
-            //sImageView.setImageUrl(item.getUser().getProfileImageURL());
-
-            //imageView = (ImageView)convertView.findViewById(R.id.icon);
 
             Bitmap bmps = IconCacheUtils.getIcon((getItem(position).isRetweet()) ?
                     getItem(position).getRetweetedStatus().getUser().getScreenName():getItem(position).getUser().getScreenName());
@@ -123,10 +118,8 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
                 @Override
                 protected void onPostExecute(Boolean bool) {
                     if (bool == Boolean.TRUE) {
-                        //if(tag.equals(imageView.getTag()))
                         ((ImageView)convertView.findViewById(R.id.icon)).setImageBitmap(bmp);
                         IconCacheUtils.setIcon(screenName,bmp);
-                        //imageView.setImageBitmap(bmp);
                     }
                 }
             };
