@@ -19,6 +19,7 @@
         android:layout_marginBottom="8dp"
         android:ems="10"
         android:gravity="left|top"
+        android:hint="今何してる？"
         android:inputType="textMultiLine" >
 
         <requestFocus />
