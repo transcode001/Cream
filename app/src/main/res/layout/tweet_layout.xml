@@ -40,6 +40,26 @@
         android:layout_alignLeft="@+id/name"
         android:layout_below="@+id/name"
         android:ellipsize="none"/>
+    <!-- 画像レイアウトスクロール用-->
+    <HorizontalScrollView
+        android:id="@+id/scroll_media_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignStart="@+id/text"
+        android:layout_below="@+id/text"
+        >
+        <!--表示レイアウト-->
+        <LinearLayout
+            android:id="@+id/media"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            >
+
+        </LinearLayout>
+
+    </HorizontalScrollView>
+
     <TextView
         android:id="@+id/via"
         android:layout_width="wrap_content"
