@@ -9,9 +9,6 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.provider.MediaStore;
-import android.renderscript.ScriptGroup;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,9 +20,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.loopj.android.image.SmartImageView;
-
-import net.transcode001.creambox.Utils.ContextUtils;
 import net.transcode001.creambox.Utils.IconCacheUtils;
 
 import java.io.IOException;

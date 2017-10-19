@@ -25,8 +25,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import net.transcode001.creambox.Utils.ContextUtils;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -71,9 +69,6 @@ public class MainActivity extends Activity {
             loadTimeLine();
             streamTimeLine();
             setTweetPopup();
-
-            ContextUtils conUtils = new ContextUtils(getApplicationContext());
-
         }
 
 
