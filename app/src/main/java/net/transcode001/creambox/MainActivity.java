@@ -66,6 +66,7 @@ public class MainActivity extends Activity {
             //長押しの定義はListActivityではサポート外なので
             //ツイート長押しの処理を定義
 
+
             loadTimeLine();
             streamTimeLine();
             setTweetPopup();

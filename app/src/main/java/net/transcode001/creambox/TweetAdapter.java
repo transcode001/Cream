@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 import twitter4j.MediaEntity;
 import twitter4j.Status;
@@ -38,21 +40,28 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
         private Bitmap bmp;
         private ImageView imageView;
         private ListView lv;
-        private RecyclerView.ViewHolder holder;
-        private ContextUtils contUtils;
         private LinearLayout linearLayout;
-
+        private ViewHolder holder;
 
         public TweetAdapter(Context context) {
             super(context, android.R.layout.simple_list_item_1);
             mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            contUtils = new ContextUtils(context);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+
             if (convertView == null) {
                 convertView = mInflater.inflate(R.layout.tweet_layout, null);
+                TextView text = (TextView) convertView.findViewById(R.id.text);
+                TextView name = (TextView) convertView.findViewById(R.id.name);
+                TextView screenName = (TextView) convertView.findViewById(R.id.screen_name);
+                TextView via=(TextView) convertView.findViewById(R.id.via);
+                ImageView icon = (ImageView)convertView.findViewById(R.id.icon);
+                holder=new ViewHolder(icon,text,name,screenName,via);
+                convertView.setTag(holder);
+            }else{
+                holder=(ViewHolder)convertView.getTag();
             }
 
             /*以前保持した画像があれば削除*/
@@ -60,37 +69,29 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
             if(linearLayout.getChildCount()>0) linearLayout.removeAllViews();
 
             Status item;
-            TextView text = (TextView) convertView.findViewById(R.id.text);
             if(getItem(position).isRetweet()){
                 item=getItem(position).getRetweetedStatus();
-                text.setTextColor(Color.rgb(0,100,0));
+                holder.getText().setTextColor(Color.rgb(0,100,0));
             }else{
                 item = getItem(position);
-                text.setTextColor(Color.BLACK);
+                holder.getText().setTextColor(Color.BLACK);
             }
 
             /*ID表示*/
-            TextView name = (TextView) convertView.findViewById(R.id.name);
-            name.setText(item.getUser().getName());
-            TextView screenName = (TextView) convertView.findViewById(R.id.screen_name);
-            screenName.setText("@" + item.getUser().getScreenName());
-            text.setText(item.getText());
+            holder.getName().setText(item.getUser().getName());
+            holder.getScreenName().setText("@" + item.getUser().getScreenName());
+            holder.getText().setText(item.getText());
 
             /*アイコン表示*/
-            Bitmap bmps = IconCacheUtils.getIcon((getItem(position).isRetweet()) ?
-                    getItem(position).getRetweetedStatus().getUser().getScreenName():getItem(position).getUser().getScreenName());
-            if(bmps==null) getUserIcon(item,convertView,item.getUser().getScreenName());
-            else ((ImageView)convertView.findViewById(R.id.icon)).setImageBitmap(bmps);
+            getUserIcon(item);
 
             /*Media取得*/
+            /*
             MediaEntity[] mediaEntity = item.getExtendedMediaEntities();
             if(mediaEntity.length>0) {
                 for (MediaEntity media : mediaEntity) {
                     ImageView mediaView = new ImageView(getContext());
                     System.out.println("resource:"+media.getMediaURL());
-                    /*Bitmap d = getImage(media.getMediaURL());
-                    mediaView.setImageBitmap(d);
-                    */
                     Uri uri = Uri.parse(media.getMediaURL());
                     mediaView.setImageURI(uri);
                     LinearLayout.LayoutParams params =
@@ -100,12 +101,12 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
                     linearLayout.addView(mediaView,params);
                 }
             }
+            */
 
             /*via表示*/
-            TextView via=(TextView) convertView.findViewById(R.id.via);
             String[] viaText = item.getSource().split("<*>",-1);
             String[] viaTexts = viaText[1].split("<",0);
-            via.setText("via "+viaTexts[0]);
+            holder.getVia().setText("via "+viaTexts[0]);
 
             return convertView;
 
@@ -136,10 +137,11 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
 
 
 
-        private Boolean getUserIcon(twitter4j.Status status, View view,String userScreenName) {
+        private void getUserIcon(twitter4j.Status status) {
             final twitter4j.Status userStatus = status;
-            final View convertView = view;
-            final String screenName = userScreenName;
+            final ViewHolder viewHolder = holder;
+            //final View convertView = view;
+            //final String screenName = userScreenName;
             AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
                 @Override
                 protected Boolean doInBackground(Void... params) {
@@ -160,13 +162,14 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
                 @Override
                 protected void onPostExecute(Boolean bool) {
                     if (bool == Boolean.TRUE) {
-                        ((ImageView)convertView.findViewById(R.id.icon)).setImageBitmap(bmp);
-                        IconCacheUtils.setIcon(screenName,bmp);
+                        viewHolder.getImage().setImageBitmap(bmp);
+                        //IcoheUtils.setIcon(screenName,bmp);
                     }
                 }
             };
+
             task.execute();
-            return true;
+
         }
 
 }
