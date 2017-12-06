@@ -26,8 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Objects;
-import java.util.concurrent.ExecutionException;
 
 import twitter4j.MediaEntity;
 import twitter4j.Status;
@@ -112,30 +110,6 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
 
 
         }
-
-        private Bitmap getImage(String imageURL){
-            Drawable d;
-            InputStream is;
-            Bitmap b;
-            try{
-                URL url = new URL(imageURL);
-                Object o =url.getContent();
-                //is =(InputStream) url.getContent();
-                //d = Drawable.createFromStream(is,"");
-                b = BitmapFactory.decodeResource((Resources)o,0);
-                //is.close();
-            }catch(MalformedURLException me){
-                System.out.println(me.toString());
-                b=null;
-            }catch(IOException ioe){
-                System.out.println(ioe.toString());
-                b=null;
-            }
-            return b;
-
-        }
-
-
 
         private void getUserIcon(twitter4j.Status status) {
             final twitter4j.Status userStatus = status;
