@@ -83,8 +83,10 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
             holder.getScreenName().setText("@" + item.getUser().getScreenName());
             holder.getText().setText(item.getText());
 
-            /*アイコン表示*/
+            /*get user icon*/
             getUserIcon(item);
+
+            /*アイコン表示*/
             holder.getImage().setVisibility(View.VISIBLE);
 
             /*Media取得*/
@@ -127,7 +129,6 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
                         url = new URL(userStatus.getUser().getProfileImageURL());
                         mStream = url.openStream();
                         bmp = BitmapFactory.decodeStream(mStream);
-                        //imageView.setImageBitmap(bmp);
                         return true;
                     } catch (MalformedURLException e) {
                         Log.e("MalformedURLException", e.toString());
@@ -141,7 +142,6 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
                 protected void onPostExecute(Boolean bool) {
                     if (bool == Boolean.TRUE) {
                         viewHolder.getImage().setImageBitmap(bmp);
-                        //IcoheUtils.setIcon(screenName,bmp);
                     }
                 }
             };

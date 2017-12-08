@@ -57,9 +57,7 @@ public class MainActivity extends Activity {
         } else {
 
             mTweetAdapter = new TweetAdapter(getApplicationContext());
-            listView = (ListView)findViewById(R.id.listView_timeline);
-            listView.setAdapter(mTweetAdapter);
-            mHandler = new Handler();
+            listView = (ListView)findViewById(R.id.listView_timeline);            mHandler = new Handler();
             mConfiguration = TwitterUtils.getConfigurationInstance(getApplicationContext());
             mTwitter = TwitterUtils.getInstance(getApplicationContext());
 
@@ -70,6 +68,7 @@ public class MainActivity extends Activity {
             loadTimeLine();
             streamTimeLine();
             setTweetPopup();
+            listView.setAdapter(mTweetAdapter);
         }
 
 
@@ -226,7 +225,7 @@ public class MainActivity extends Activity {
                                     if (bool) showToast("お気に入りに登録しました");
                                     else showToast("お気に入り登録に失敗しました\nリクエストを実行できません");
                                     alertDialogEnable=true;
-                                    dialog.dismiss();
+                                   dialog.dismiss();
                                 }
                             };
                             task.execute();
