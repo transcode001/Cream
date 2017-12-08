@@ -62,6 +62,9 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
                 holder=(ViewHolder)convertView.getTag();
             }
 
+            /*invisible view*/
+            holder.getImage().setVisibility(View.GONE);
+
             /*以前保持した画像があれば削除*/
             linearLayout = (LinearLayout)convertView.findViewById(R.id.media);
             if(linearLayout.getChildCount()>0) linearLayout.removeAllViews();
@@ -82,6 +85,7 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
 
             /*アイコン表示*/
             getUserIcon(item);
+            holder.getImage().setVisibility(View.VISIBLE);
 
             /*Media取得*/
             /*
