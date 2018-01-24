@@ -6,8 +6,12 @@ import android.widget.ListView;
 import java.util.HashMap;
 
 public class IconCacheUtils {
-    private static HashMap<String,Bitmap> cache = new HashMap<>();
+    private static HashMap<String,Bitmap> cache;
     /* key -> screen name */
+
+    public IconCacheUtils(){
+        cache = new HashMap<>();
+    }
 
     public static Bitmap getIcon(String key){
         return (cache.containsKey(key)) ? cache.get(key) : null;

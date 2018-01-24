@@ -13,6 +13,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
 import android.app.ActionBar;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -31,13 +32,13 @@ import java.util.List;
 import twitter4j.*;
 import twitter4j.conf.Configuration;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
 
     public Twitter mTwitter;
     public Configuration mConfiguration;
     public TweetAdapter mTweetAdapter;
-    private TwitterStream storeTwittterStreamInstance;
+    private TwitterStream storeTwitterStreamInstance;
     private Handler mHandler;
     private ListView listView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -57,23 +58,24 @@ public class MainActivity extends Activity {
         } else {
 
             mTweetAdapter = new TweetAdapter(getApplicationContext());
-            listView = (ListView)findViewById(R.id.listView_timeline);            mHandler = new Handler();
+            listView = (ListView)findViewById(R.id.listView_timeline);
+            mHandler = new Handler();
             mConfiguration = TwitterUtils.getConfigurationInstance(getApplicationContext());
             mTwitter = TwitterUtils.getInstance(getApplicationContext());
 
             //長押しの定義はListActivityではサポート外なので
             //ツイート長押しの処理を定義
 
-
             loadTimeLine();
-            streamTimeLine();
-            setTweetPopup();
+
+            //streamTimeLine();
+            //setTweetPopup();
             listView.setAdapter(mTweetAdapter);
         }
 
 
     }
-
+    /*
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -90,8 +92,9 @@ public class MainActivity extends Activity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
 
+    }*/
+/*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -105,7 +108,7 @@ public class MainActivity extends Activity {
 
         return true;
     }
-
+*/
 
 
     private void setTweetPopup(){
@@ -528,10 +531,10 @@ public class MainActivity extends Activity {
             //UserStreamを開始
             mTwitterStream.user();
             userStreamEnable = true;
-            storeTwittterStreamInstance = mTwitterStream;
+            storeTwitterStreamInstance = mTwitterStream;
         }else{
-            storeTwittterStreamInstance.cleanUp();
-            storeTwittterStreamInstance.shutdown();
+            storeTwitterStreamInstance.cleanUp();
+            storeTwitterStreamInstance.shutdown();
             userStreamEnable = false;
         }
 
