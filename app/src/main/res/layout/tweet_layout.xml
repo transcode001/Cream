@@ -3,14 +3,21 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="8dp"
+    android:focusable="false"
     >
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/retweet_status"
+        android:text="show who this tweet retweet"
+        android:layout_alignParentTop="true"/>
 
     <ImageView
         android:id="@+id/icon"
         android:layout_width="40dp"
         android:layout_height="40dp"
-        android:layout_alignParentTop="true"
+        android:layout_below="@id/retweet_status"
         android:src="@mipmap/ic_launcher" />
 
     <TextView
