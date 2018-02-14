@@ -4,6 +4,7 @@ package net.transcode001.creambox;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -13,7 +14,7 @@ import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 
 
-public class TweetActivity extends Activity {
+public class TweetActivity extends AppCompatActivity {
     private EditText mInputText;
     private Twitter mTwitter;
 

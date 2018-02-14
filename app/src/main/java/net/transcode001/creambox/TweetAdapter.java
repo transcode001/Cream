@@ -2,6 +2,7 @@ package net.transcode001.creambox;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -26,25 +27,23 @@ import java.net.URL;
 
 import twitter4j.MediaEntity;
 import twitter4j.Status;
+import twitter4j.User;
 
 
 public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
         private LayoutInflater mInflater;
-        private URL url;
-        private InputStream mStream;
-        private Bitmap bmp;
-        private ImageView imageView;
-        private ListView lv;
-        private LinearLayout linearLayout;
         private HoldView holder;
+        private IconCacheUtils utils;
 
         public TweetAdapter(Context context) {
             super(context, android.R.layout.simple_list_item_1);
             mInflater = (LayoutInflater) context.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
+            utils = new IconCacheUtils();
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, View convertView, ViewGroup parent) {
+
             if (convertView == null) {
                 holder = new HoldView();
                 convertView = mInflater.inflate(R.layout.tweet_layout, null);
@@ -53,15 +52,16 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
                 holder.screenName = (TextView) convertView.findViewById(R.id.screen_name);
                 holder.via=(TextView) convertView.findViewById(R.id.via);
                 holder.icon = (ImageView) convertView.findViewById(R.id.icon);
+                holder.retweetStatus = (TextView)convertView.findViewById(R.id.retweet_status);
+
                 convertView.setTag(holder);
-                //view=convertView;
             }else{
-                holder=(HoldView) convertView.getTag();
+                holder=(HoldView)convertView.getTag();
             }
 
             /*invisible view*/
             holder.icon.setVisibility(View.GONE);
-
+            holder.retweetStatus.setVisibility(View.GONE);
             /*
 
 
@@ -72,6 +72,8 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
 
             Status item;
             if(getItem(position).isRetweet()){
+                holder.retweetStatus.setVisibility(View.VISIBLE);
+                holder.retweetStatus.setText(getItem(position).getUser().getScreenName()+" retweeted");
                 item=getItem(position).getRetweetedStatus();
                 holder.text.setTextColor(Color.rgb(0,100,0));
             }else{
@@ -85,10 +87,20 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
 
             holder.text.setText(item.getText());
             holder.icon.setTag(item.getUser().getScreenName());
+            holder.icon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getContext(), UserProfile.class);
+                    intent.putExtra("Status",getItem(position).getUser().getId());
+                    getContext().startActivity(intent);
+                }
+            });
+
 
             /*get user icon*/
-            Bitmap bmp = IconCacheUtils.getIcon(item.getUser().getScreenName());
-            getUserIcon(item,holder.icon);
+            //Bitmap bmp = IconCacheUtils.getIcon(item.getUser().getScreenName());
+            getUserIcon(item, holder.icon);
+
 
 
             /*Media取得*/
@@ -121,8 +133,7 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
         }
 
         private void getUserIcon(twitter4j.Status status,ImageView icon) {
-            GetImageTask getImageTask = new GetImageTask(holder.icon,status);
+            GetImageTask getImageTask = new GetImageTask(icon,status,utils);
             getImageTask.execute();
         }
-
 }

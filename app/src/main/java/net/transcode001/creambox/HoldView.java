@@ -9,4 +9,5 @@ class HoldView {
     TextView screenName;
     TextView via;
     ImageView icon;
+    TextView retweetStatus;
 }

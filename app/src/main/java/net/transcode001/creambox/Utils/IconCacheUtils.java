@@ -5,7 +5,7 @@ import android.widget.ListView;
 
 import java.util.HashMap;
 
-public class IconCacheUtils {
+public class IconCacheUtils{
     private static HashMap<String,Bitmap> cache;
     /* key -> screen name */
 

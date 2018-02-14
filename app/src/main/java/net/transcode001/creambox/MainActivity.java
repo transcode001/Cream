@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     public Twitter mTwitter;
     public Configuration mConfiguration;
     public TweetAdapter mTweetAdapter;
-    private TwitterStream storeTwitterStreamInstance;
     private Handler mHandler;
     private ListView listView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
@@ -72,14 +71,13 @@ public class MainActivity extends AppCompatActivity {
             });
             {
                 listView.setAdapter(mTweetAdapter);
+                //setTweetPopup();
             }
 
 
-            //長押しの定義はListActivityではサポート外なので
-            //ツイート長押しの処理を定義
             loadTimeLine();
 
-            setTweetPopup();
+            //setTweetPopup();
             listView.setVisibility(View.VISIBLE);
         }
 
@@ -123,12 +121,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void setTweetPopup(){
 
-        ImageView userIcon = (ImageView)findViewById(R.id.icon);
-        /*
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                /*
                 final int pos = position;
 
                 Intent intent = new Intent(getApplicationContext(),UserProfile.class);
@@ -137,11 +134,13 @@ public class MainActivity extends AppCompatActivity {
                 else
                     intent.putExtra("Status",mTweetAdapter.getItem(pos).getUser().getId());
                 startActivity(intent);
+                */
+                showToast("hoge");
             }
         });
-        */
 
 
+        /*
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -249,6 +248,7 @@ public class MainActivity extends AppCompatActivity {
                 return true;
             }
         });
+        */
     }
 
 
@@ -332,5 +332,5 @@ public class MainActivity extends AppCompatActivity {
     private void showToast(String text) {
         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
     }
-    
+
 }

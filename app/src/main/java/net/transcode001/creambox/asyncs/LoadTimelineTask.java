@@ -28,7 +28,6 @@ public class LoadTimelineTask extends AsyncTask<Void,Void,List<twitter4j.Status>
             return mTwitter.getHomeTimeline();
         } catch (TwitterException e) {
             if(e.isCausedByNetworkIssue()){
-                showToast("ネットワークに接続されていません");
                 System.out.println("failed");
             }
             e.printStackTrace();
@@ -44,12 +43,8 @@ public class LoadTimelineTask extends AsyncTask<Void,Void,List<twitter4j.Status>
                 mTweetAdapter.add(status);
             }
             //getListView().setSelection(0);
-        } else {
-            showToast("タイムラインの取得に失敗しました");
         }
     }
 
-    private void showToast(String text) {
-        Toast.makeText(null, text, Toast.LENGTH_SHORT).show();
-    }
+
 }
