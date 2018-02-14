@@ -1,6 +1,5 @@
 package net.transcode001.creambox;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -26,8 +25,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import net.transcode001.creambox.asyncs.LoadTimelineTask;
+
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import twitter4j.*;
 import twitter4j.conf.Configuration;
@@ -42,9 +44,6 @@ public class MainActivity extends AppCompatActivity {
     private Handler mHandler;
     private ListView listView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private Boolean userStreamEnable=false;
-    private Boolean alertDialogEnable=false;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,19 +57,30 @@ public class MainActivity extends AppCompatActivity {
         } else {
 
             mTweetAdapter = new TweetAdapter(getApplicationContext());
-            listView = (ListView)findViewById(R.id.listView_timeline);
+            listView = (ListView) findViewById(R.id.listView_timeline);
             mHandler = new Handler();
+            listView.setVisibility(View.GONE);
             mConfiguration = TwitterUtils.getConfigurationInstance(getApplicationContext());
             mTwitter = TwitterUtils.getInstance(getApplicationContext());
+            mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh);
+            mSwipeRefreshLayout.setRefreshing(false);
+            mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    reloadTimeLine();
+                }
+            });
+            {
+                listView.setAdapter(mTweetAdapter);
+            }
+
 
             //長押しの定義はListActivityではサポート外なので
             //ツイート長押しの処理を定義
-
             loadTimeLine();
 
-            //streamTimeLine();
-            //setTweetPopup();
-            listView.setAdapter(mTweetAdapter);
+            setTweetPopup();
+            listView.setVisibility(View.VISIBLE);
         }
 
 
@@ -112,10 +122,13 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void setTweetPopup(){
+
         ImageView userIcon = (ImageView)findViewById(R.id.icon);
+        /*
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 final int pos = position;
 
                 Intent intent = new Intent(getApplicationContext(),UserProfile.class);
@@ -126,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        */
 
 
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
@@ -144,7 +158,6 @@ public class MainActivity extends AppCompatActivity {
                 builder.setView(content);
                 TextView tv = (TextView) view.findViewById(R.id.text);
                 TextView name = (TextView) view.findViewById(R.id.name);
-                alertDialogEnable=false;
                 final long tweetId = mTweetAdapter.getItem(position).getId();
 
                 builder.setTitle(name.getText());
@@ -202,7 +215,6 @@ public class MainActivity extends AppCompatActivity {
                                 protected void onPostExecute(Boolean bool){
                                     if(bool) showToast("お気に入りを解除しました");
                                     else showToast("リクエストを実行できません");
-                                    alertDialogEnable=true;
                                 }
                             };
                             task.execute();
@@ -227,7 +239,6 @@ public class MainActivity extends AppCompatActivity {
                                 protected void onPostExecute(Boolean bool) {
                                     if (bool) showToast("お気に入りに登録しました");
                                     else showToast("お気に入り登録に失敗しました\nリクエストを実行できません");
-                                    alertDialogEnable=true;
                                    dialog.dismiss();
                                 }
                             };
@@ -243,34 +254,34 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadTimeLine() {
 
-        AsyncTask<Void, Void, List<twitter4j.Status>> task = new AsyncTask<Void, Void, List<twitter4j.Status>>() {
-            @Override
-            protected List<twitter4j.Status> doInBackground(Void... params) {
-                try {
-                    return mTwitter.getHomeTimeline();
-                } catch (TwitterException e) {
-                    if(e.isCausedByNetworkIssue()){
-                        showToast("ネットワークに接続されていません");
-                    }
-                    e.printStackTrace();
-                }
-                return null;
-            }
+        LoadTimelineTask task = new LoadTimelineTask(mTwitter,mTweetAdapter);
 
-            @Override
-            protected void onPostExecute(List<twitter4j.Status> result) {
-                if (result != null) {
-                    //mTweetAdapter.clear();
-                    for (twitter4j.Status status : result) {
-                        mTweetAdapter.add(status);
+        try{
+            task.execute();
+            final List<twitter4j.Status> list = task.get();
+            if(list.size()>0) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (twitter4j.Status status : list)
+                            mTweetAdapter.add(status);
                     }
-                    //getListView().setSelection(0);
-                } else {
-                    showToast("タイムラインの取得に失敗しました");
-                }
-            }
-        };
-        task.execute();
+                }).start();
+            }else throw new TwitterException("failed");
+
+        }catch(ExecutionException e){
+            showToast("読み込みに失敗しました");
+            System.out.println("failed");
+        }catch(InterruptedException ie){
+            showToast("読み込みに失敗しました");
+        }catch(NullPointerException ne){
+            showToast("タイムラインの取得に失敗しました");
+        }catch(TwitterException te){
+            showToast("タイムラインの取得に失敗しました\nAPI規制です");
+        }
+
+
+
     }
 
     private void reloadTimeLine() {
@@ -279,9 +290,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected List<twitter4j.Status> doInBackground(Void... params) {
                 try {
-                    twitter4j.Status s = mTweetAdapter.getItem(mTweetAdapter.getCount()-1);
+                    twitter4j.Status s = mTweetAdapter.getItem(0);
                     Paging p = new Paging();
-                    p.setMaxId(s.getId());
+                    p.setSinceId(s.getId());
                     return mTwitter.getHomeTimeline(p);
                 } catch (TwitterException e) {
                     if(e.isCausedByNetworkIssue()){
@@ -295,249 +306,31 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(List<twitter4j.Status> result) {
                 if (result != null) {
-                    //mTweetAdapter.clear();
+                    System.out.println("get!");
+                    //一番↓の位置
                     int position=mTweetAdapter.getCount();
-                    result.remove(0);
+                    //先頭部分が最後に取得した部分と重複するので削除
+                    //result.remove(0);
+                    //ツイート順に並び替える
                     Collections.reverse(result);
 
                     for (twitter4j.Status status : result) {
-                        mTweetAdapter.insert(status,position);
+                        System.out.println(status.getText());
+                        mTweetAdapter.insert(status,0);
                     }
                     //getListView().setSelection(0);
                 } else {
                     showToast("タイムラインの取得に失敗しました");
                 }
+                mSwipeRefreshLayout.setRefreshing(false);
             }
         };
         task.execute();
+
     }
 
     private void showToast(String text) {
         Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT).show();
     }
-
-    private void streamTimeLine() {
-        if(!userStreamEnable) {
-            TwitterStream mTwitterStream = new TwitterStreamFactory(mConfiguration).getInstance();
-            UserStreamListener listener = new UserStreamListener() {
-                @Override
-                public void onDeletionNotice(long l, long l1) {
-
-                }
-
-                @Override
-                public void onFriendList(long[] longs) {
-
-                }
-
-                @Override
-                public void onFavorite(User user, User user1, Status status) {
-                    String userName;
-                    //NotificationBuilder構築
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
-                    try {
-                        userName = mTwitter.getScreenName();
-                        if(userName.equals(user1.getScreenName())) {
-
-                            //アイコンを設定
-                            builder.setSmallIcon(R.drawable.images);
-                            //テキスト設定
-                            builder.setContentTitle("CreamBox");
-                            builder.setContentText("Your tweet favorited by @" + user.getScreenName());
-                            builder.setShowWhen(true);
-                            //Activityに移動(未確認)
-                            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("hoge"));
-                            PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), RESULT_OK, intent, PendingIntent.FLAG_ONE_SHOT);
-                            builder.setContentIntent(contentIntent);
-                            builder.setAutoCancel(true);
-
-                            final NotificationCompat.Builder mBuilder = builder;
-                            mHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    NotificationManagerCompat manager = NotificationManagerCompat.from(getApplicationContext());
-                                    manager.notify(3, mBuilder.build());
-                                }
-                            });
-                        }
-                    }catch(TwitterException e){
-
-                    }
-
-
-                }
-
-                @Override
-                public void onUnfavorite(User user, User user1, Status status) {
-
-                }
-
-                @Override
-                public void onFollow(User user, User user1) {
-
-                }
-
-                @Override
-                public void onUnfollow(User user, User user1) {
-
-                }
-
-                @Override
-                public void onDirectMessage(DirectMessage directMessage) {
-                    //NotificationBuilder構築
-                    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext());
-                    //アイコンを設定
-                    builder.setSmallIcon(R.drawable.images);
-                    //テキスト設定
-                    builder.setContentTitle("CreamBox");
-                    builder.setContentText("You've got Direct Mail from @" + directMessage.getSender().getScreenName());
-                    builder.setShowWhen(true);
-                    //Activityに移動(未確認)
-                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("hoge"));
-                    PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), RESULT_OK, intent, PendingIntent.FLAG_ONE_SHOT);
-                    builder.setContentIntent(contentIntent);
-                    builder.setAutoCancel(true);
-
-                    final NotificationCompat.Builder mBuilder = builder;
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            NotificationManagerCompat manager = NotificationManagerCompat.from(getApplicationContext());
-                            manager.notify(3, mBuilder.build());
-                        }
-                    });
-
-                }
-
-                @Override
-                public void onUserListMemberAddition(User user, User user1, UserList userList) {
-
-                }
-
-                @Override
-                public void onUserListMemberDeletion(User user, User user1, UserList userList) {
-
-                }
-
-                @Override
-                public void onUserListSubscription(User user, User user1, UserList userList) {
-
-                }
-
-                @Override
-                public void onUserListUnsubscription(User user, User user1, UserList userList) {
-
-                }
-
-                @Override
-                public void onUserListCreation(User user, UserList userList) {
-
-                }
-
-                @Override
-                public void onUserListUpdate(User user, UserList userList) {
-
-                }
-
-                @Override
-                public void onUserListDeletion(User user, UserList userList) {
-
-                }
-
-                @Override
-                public void onUserProfileUpdate(User user) {
-
-                }
-
-                @Override
-                public void onUserSuspension(long l) {
-
-                }
-
-                @Override
-                public void onUserDeletion(long l) {
-
-                }
-
-                @Override
-                public void onBlock(User user, User user1) {
-
-                }
-
-                @Override
-                public void onUnblock(User user, User user1) {
-
-                }
-
-                @Override
-                public void onRetweetedRetweet(User user, User user1, Status status) {
-
-                }
-
-                @Override
-                public void onFavoritedRetweet(User user, User user1, Status status) {
-
-                }
-
-                @Override
-                public void onQuotedTweet(User user, User user1, Status status) {
-
-                }
-
-                @Override
-                public void onStatus(Status status) {
-                    final String tweets = "@" + status.getUser().getScreenName() + ":" + status.getText() + "\n";
-                    final twitter4j.Status tweet = status;
-                    System.out.println(tweets);
-
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            mTweetAdapter.insert(tweet, 0);
-                            //getListView().setSelection(0);
-                        }
-                    });
-
-
-                }
-
-                @Override
-                public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-
-                }
-
-                @Override
-                public void onTrackLimitationNotice(int i) {
-
-                }
-
-                @Override
-                public void onScrubGeo(long l, long l1) {
-
-                }
-
-                @Override
-                public void onStallWarning(StallWarning stallWarning) {
-
-                }
-
-                @Override
-                public void onException(Exception e) {
-
-                }
-            };
-            //インスタンスを設定
-            mTwitterStream.addListener(listener);
-            //UserStreamを開始
-            mTwitterStream.user();
-            userStreamEnable = true;
-            storeTwitterStreamInstance = mTwitterStream;
-        }else{
-            storeTwitterStreamInstance.cleanUp();
-            storeTwitterStreamInstance.shutdown();
-            userStreamEnable = false;
-        }
-
-    }
-
+    
 }
