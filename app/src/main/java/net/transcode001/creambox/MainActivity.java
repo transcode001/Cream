@@ -40,8 +40,8 @@ public class MainActivity extends AppCompatActivity {
     public Twitter mTwitter;
     public Configuration mConfiguration;
     public TweetAdapter mTweetAdapter;
-    private Handler mHandler;
     private ListView listView;
+    private Handler mHandler;
     private SwipeRefreshLayout mSwipeRefreshLayout;
 
     @Override
@@ -253,35 +253,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void loadTimeLine() {
-
         LoadTimelineTask task = new LoadTimelineTask(mTwitter,mTweetAdapter);
-
-        try{
-            task.execute();
-            final List<twitter4j.Status> list = task.get();
-            if(list.size()>0) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (twitter4j.Status status : list)
-                            mTweetAdapter.add(status);
-                    }
-                }).start();
-            }else throw new TwitterException("failed");
-
-        }catch(ExecutionException e){
-            showToast("読み込みに失敗しました");
-            System.out.println("failed");
-        }catch(InterruptedException ie){
-            showToast("読み込みに失敗しました");
-        }catch(NullPointerException ne){
-            showToast("タイムラインの取得に失敗しました");
-        }catch(TwitterException te){
-            showToast("タイムラインの取得に失敗しました\nAPI規制です");
-        }
-
-
-
+        task.execute();
     }
 
     private void reloadTimeLine() {
