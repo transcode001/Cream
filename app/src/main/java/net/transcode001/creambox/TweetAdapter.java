@@ -91,10 +91,14 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(getContext(), UserProfile.class);
-                    intent.putExtra("Status",getItem(position).getUser().getId());
+                    if(getItem(position).isRetweet())
+                        intent.putExtra("Status",getItem(position).getRetweetedStatus().getUser().getId());
+                    else
+                        intent.putExtra("Status",getItem(position).getUser().getId());
                     getContext().startActivity(intent);
                 }
             });
+
 
 
             /*get user icon*/
