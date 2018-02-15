@@ -38,12 +38,12 @@
         android:layout_marginLeft="8dp"
         android:layout_toRightOf="@+id/name"
         android:textSize="12sp"
-        android:text="\uFF20UserID" />
+        android:text="UserID" />
 
     <TextView
         android:id="@+id/text"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignLeft="@+id/name"
         android:layout_below="@+id/name"
         android:ellipsize="none"/>
