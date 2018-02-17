@@ -27,7 +27,8 @@
         <activity android:name=".TweetSearch">
 
         </activity>
-        <activity android:name=".UserProfile">
+        <activity android:name=".UserProfile"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
 
         </activity>
     </application>
