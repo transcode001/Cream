@@ -26,10 +26,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import net.transcode001.creambox.asyncs.LoadTimelineTask;
+import net.transcode001.creambox.asyncs.ReloadTimelineTask;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 
 import twitter4j.*;
 import twitter4j.conf.Configuration;
@@ -71,13 +71,11 @@ public class MainActivity extends AppCompatActivity {
             });
             {
                 listView.setAdapter(mTweetAdapter);
-                //setTweetPopup();
             }
 
 
             loadTimeLine();
 
-            //setTweetPopup();
             listView.setVisibility(View.VISIBLE);
         }
 
@@ -102,6 +100,12 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
 
     }*/
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+    }
+
 /*
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -258,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void reloadTimeLine() {
-
+        /*
         AsyncTask<Void, Void, List<twitter4j.Status>> task = new AsyncTask<Void, Void, List<twitter4j.Status>>() {
             @Override
             protected List<twitter4j.Status> doInBackground(Void... params) {
@@ -298,8 +302,10 @@ public class MainActivity extends AppCompatActivity {
                 mSwipeRefreshLayout.setRefreshing(false);
             }
         };
+        */
+        ReloadTimelineTask task = new ReloadTimelineTask(mTwitter,mTweetAdapter);
         task.execute();
-
+        mSwipeRefreshLayout.setRefreshing(false);
     }
 
     private void showToast(String text) {
