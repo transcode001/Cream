@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.util.AndroidRuntimeException;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import net.transcode001.creambox.Utils.IconCacheUtils;
 import net.transcode001.creambox.asyncs.GetImageTask;
@@ -47,6 +49,8 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
             if (convertView == null) {
                 holder = new HoldView();
                 convertView = mInflater.inflate(R.layout.tweet_layout, null);
+                //convertView.getResources().getColor(R.color.cardview_light_background);
+                //convertView.setBackgroundColor(Color.rgb(0,0,0));
                 holder.text = (TextView) convertView.findViewById(R.id.text);
                 holder.name = (TextView) convertView.findViewById(R.id.name);
                 holder.screenName = (TextView) convertView.findViewById(R.id.screen_name);
@@ -75,27 +79,32 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
                 holder.retweetStatus.setVisibility(View.VISIBLE);
                 holder.retweetStatus.setText(getItem(position).getUser().getScreenName()+" retweeted");
                 item=getItem(position).getRetweetedStatus();
-                holder.text.setTextColor(Color.rgb(0,100,0));
             }else{
                 item = getItem(position);
-                holder.text.setTextColor(Color.BLACK);
             }
+            holder.text.setTextColor(Color.WHITE);
 
             /*ID表示*/
             holder.name.setText(item.getUser().getName());
             holder.screenName.setText("@" + item.getUser().getScreenName());
 
             holder.text.setText(item.getText());
+            holder.text.setTextColor(Color.WHITE);
             holder.icon.setTag(item.getUser().getScreenName());
             holder.icon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(getContext(), UserProfile.class);
-                    if(getItem(position).isRetweet())
-                        intent.putExtra("Status",getItem(position).getRetweetedStatus().getUser().getId());
-                    else
-                        intent.putExtra("Status",getItem(position).getUser().getId());
-                    getContext().startActivity(intent);
+                    try {
+                        Intent intent = new Intent(getContext(), UserProfile.class);
+                        if (getItem(position).isRetweet())
+                            intent.putExtra("Status", getItem(position).getRetweetedStatus().getUser().getId());
+                        else
+                            intent.putExtra("Status", getItem(position).getUser().getId());
+                            intent.putExtra("position",position);
+                        getContext().startActivity(intent);
+                    }catch(AndroidRuntimeException are){
+                        System.out.println(are.getCause().toString());
+                    }
                 }
             });
 

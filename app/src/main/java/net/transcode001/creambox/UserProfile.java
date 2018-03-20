@@ -10,8 +10,9 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.TabLayout;
+//import android.support.design.widget.TabLayout;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,24 +40,25 @@ import twitter4j.TwitterException;
 import twitter4j.URLEntity;
 
 
-public class UserProfile extends Activity {
+public class UserProfile extends AppCompatActivity {
 
-    Boolean alertDialogEnable;
     private TweetAdapter mTweetAdapter;
     private Twitter mTwitter;
     private ListView listView;
     private SwipeRefreshLayout mSwipeRefreshLayout;
-    private Status content;
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_profile_layout);
-
+=
+        int position = getIntent().getIntExtra("position",0);
+        Status content = mTweetAdapter.getItem(position);
 
         mTweetAdapter = new TweetAdapter(getApplicationContext());
         listView = (ListView) findViewById(R.id.user_profile_tweet);
         listView.setAdapter(mTweetAdapter);
         mTwitter = TwitterUtils.getInstance(getApplicationContext());
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.refresh_profile);
+        final twitter4j.Status con = content;
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
@@ -64,26 +66,21 @@ public class UserProfile extends Activity {
                     @Override
                     public void run() {
                         mTweetAdapter.clear();
-                        loadTimeLine();
+                        loadTimeLine(con);
                         mSwipeRefreshLayout.setRefreshing(false);
                     }
                 },1000);
             }
         });
 
-        //TabLayout tabLayout=(TabLayout) findViewById(R.id.user_profile_tab);
-        //tabLayout.addTab(tabLayout.newTab().setText("test1"));
-        //tabLayout.addTab(tabLayout.newTab().setText("test2"));
-
-
-        setTweetPopup();
         if(content!=null) setUserProfileVIew(content);
-        loadTimeLine();
+        loadTimeLine(content);
+
     }
 
 
-    private void loadTimeLine() {
-
+    private void loadTimeLine(twitter4j.Status content) {
+        final twitter4j.Status con = content;
         AsyncTask<Void, Void, List<Status>> task = new AsyncTask<Void, Void, List<twitter4j.Status>>() {
             Intent i=getIntent();
             final long userId=i.getLongExtra("Status",0);
@@ -111,7 +108,6 @@ public class UserProfile extends Activity {
                 if (result != null) {
                     //mTweetAdapter.clear();
                     for (twitter4j.Status status : result) {
-                        if(content==null) content = status;
                         mTweetAdapter.add(status);
                     }
                     //getListView().setSelection(0);
@@ -121,129 +117,6 @@ public class UserProfile extends Activity {
             }
         };
         task.execute();
-    }
-
-    private void setTweetPopup(){
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                final int pos = position;
-
-                Intent intent = new Intent(getApplicationContext(),UserProfile.class);
-                if(mTweetAdapter.getItem(pos).isRetweet())
-                    intent.putExtra("Status",mTweetAdapter.getItem(pos).getRetweetedStatus().getUser().getId());
-                else
-                    intent.putExtra("Status",mTweetAdapter.getItem(pos).getUser().getId());
-                startActivity(intent);
-            }
-        });
-
-        new ListView(getApplicationContext()).setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
-
-                final AlertDialog.Builder builder = new AlertDialog.Builder(UserProfile.this);
-                final AlertDialog dialog;
-                LayoutInflater li = (LayoutInflater) getApplicationContext()
-                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-                View content = li.inflate(R.layout.popup_tweet,null);
-                //場所をセット
-                view.setVerticalScrollbarPosition(position);
-
-                builder.setView(content);
-                TextView tv = (TextView) view.findViewById(R.id.text);
-                TextView name = (TextView) view.findViewById(R.id.name);
-                alertDialogEnable=false;
-                final long tweetId = mTweetAdapter.getItem(position).getId();
-                Button retweetButton = (Button) content.findViewById(R.id.button_retweet_tweet);
-                Button favoriteButton = (Button) content.findViewById(R.id.button_favorite_tweet);
-                retweetButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        AsyncTask<Void,Void,Boolean> task= new AsyncTask<Void, Void, Boolean>() {
-                            @Override
-                            protected Boolean doInBackground(Void... voids) {
-                                try{
-                                    mTwitter.retweetStatus(tweetId);
-                                    return true;
-                                }catch(TwitterException e){
-                                    return false;
-                                }
-                            }
-                            @Override
-                            protected void onPostExecute(Boolean bool){
-                                if(bool) showToast("リツイートしました");
-                                else showToast("リツイートに失敗しました\nリクエストを実行できません");
-                                //dialog.dismiss();
-                            }
-                        };
-                        task.execute();
-                    }
-                });
-                if(mTweetAdapter.getItem(position).isFavorited()){
-                    //お気に入り登録
-                    favoriteButton.setText("unfavorited");
-                    favoriteButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            AsyncTask<Void,Void,Boolean> task= new AsyncTask<Void, Void, Boolean>() {
-                                @Override
-                                protected Boolean doInBackground(Void... voids) {
-                                    try{
-                                        mTwitter.destroyFavorite(tweetId);
-                                        return true;
-                                    }catch(TwitterException e){
-                                        return false;
-                                    }
-
-                                }
-                                @Override
-                                protected void onPostExecute(Boolean bool){
-                                    if(bool) showToast("お気に入りを解除しました");
-                                    else showToast("リクエストを実行できません");
-                                    alertDialogEnable=true;
-                                }
-                            };
-                            task.execute();
-                        }
-                    });
-                }else {
-                    //お気に入り登録
-                    favoriteButton.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            AsyncTask<Void, Void, Boolean> task = new AsyncTask<Void, Void, Boolean>() {
-                                @Override
-                                protected Boolean doInBackground(Void... voids) {
-                                    try {
-                                        mTwitter.createFavorite(tweetId);
-                                        return true;
-                                    } catch (TwitterException e) {
-                                        return false;
-                                    }
-                                }
-                                @Override
-                                protected void onPostExecute(Boolean bool) {
-                                    if (bool) showToast("お気に入りに登録しました");
-                                    else showToast("お気に入り登録に失敗しました\nリクエストを実行できません");
-                                    alertDialogEnable=true;
-                                }
-                            };
-                            task.execute();
-                        }
-                    });
-                }
-
-                builder.setTitle(name.getText());
-                builder.setMessage(tv.getText());
-                dialog=builder.create();
-                dialog.show();
-
-                return true;
-            }
-        });
     }
 
     private void showToast(String text) {
