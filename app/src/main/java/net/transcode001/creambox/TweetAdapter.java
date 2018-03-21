@@ -99,7 +99,7 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
                         if (getItem(position).isRetweet())
                             intent.putExtra("Status", getItem(position).getRetweetedStatus().getUser().getId());
                         else
-                            intent.putExtra("Status", getItem(position).getUser().getId());
+                            intent.putExtra("userid", getItem(position).getUser().getId());
                             intent.putExtra("position",position);
                         getContext().startActivity(intent);
                     }catch(AndroidRuntimeException are){
