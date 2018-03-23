@@ -2,6 +2,7 @@ package net.transcode001.creambox
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.widget.SwipeRefreshLayout
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,11 +34,21 @@ open class UserTweetFragment: Fragment(){
 
         val userId:Long = arguments.getLong("userid")
         /*
-            profile_tweet_text uses instead of listview
+            use profile_tweet_text instead of listview
          */
         profile_tweet_text.adapter = mTweetAdapter
         val mTwitter = TwitterUtils.getInstance(context)
         val task = LoadUserTimeLineTask(mTwitter,mTweetAdapter,userId)
         task.execute()
+        /*
+        * define swipe refresh
+        */
+        //profile_tweet_refresh.isRefreshing = false
+        profile_tweet_refresh.setOnRefreshListener {
+            val tasks = LoadUserTimeLineTask(mTwitter,mTweetAdapter,userId)
+            tasks.execute()
+            profile_tweet_refresh.isRefreshing = false
+        }
+
     }
 }
