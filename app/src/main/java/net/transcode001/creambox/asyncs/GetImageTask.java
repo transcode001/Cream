@@ -32,7 +32,7 @@ public class GetImageTask extends AsyncTask<Void,Void,Bitmap> {
         if(pic!=null) return pic;
 
         try{
-            URL url = new URL(status.getUser().getMiniProfileImageURL());
+            URL url = new URL(status.getUser().getProfileImageURL());
             InputStream mStream = url.openStream();
             Bitmap bmp = BitmapFactory.decodeStream(mStream);
             mStream.close();

@@ -3,6 +3,7 @@ package net.transcode001.creambox.asyncs;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
+import net.transcode001.creambox.MainActivity;
 import net.transcode001.creambox.TweetAdapter;
 
 import java.util.List;
@@ -28,7 +29,7 @@ public class LoadTimelineTask extends AsyncTask<Void,Void,List<twitter4j.Status>
             return mTwitter.getHomeTimeline();
         } catch (TwitterException e) {
             if(e.isCausedByNetworkIssue()){
-                System.out.println("failed");
+                System.out.println();
             }
             e.printStackTrace();
         }

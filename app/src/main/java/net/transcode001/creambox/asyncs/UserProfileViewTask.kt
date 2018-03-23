@@ -10,6 +10,7 @@ import twitter4j.Twitter
 import twitter4j.TwitterException
 import twitter4j.User
 import java.io.InputStream
+import java.net.MalformedURLException
 import java.net.URL
 
 open class UserProfileViewTask(mTwitter: Twitter, userId:Long, header:ImageView,icon:ImageView)
@@ -42,6 +43,10 @@ open class UserProfileViewTask(mTwitter: Twitter, userId:Long, header:ImageView,
 
         }catch(te: TwitterException) {
             System.out.println(te.toString())
+        }catch(mue:MalformedURLException){
+            /*
+            * プロフィールなし？
+            * */
         }
         return listOf<Bitmap>()
     }
