@@ -18,17 +18,34 @@ open class UserTweetFragmentAdapter(fm:FragmentManager,id:Long): FragmentPagerAd
         when(position){
             0 ->{
                 val args =Bundle()
+                val usf = UserStateFragment()
+                args.putLong("userid",id)
+                usf.arguments = args
+                fragment = usf
+            }
+
+            else ->{
+                val args =Bundle()
                 val utf = UserTweetFragment()
                 args.putLong("userid",id)
                 utf.arguments = args
                 fragment = utf
             }
-            else -> fragment = TFragment()
         }
         return fragment
     }
 
     override fun getCount(): Int {
         return PAGE_NUM
+    }
+
+    override fun getPageTitle(position: Int): CharSequence {
+        var cs:CharSequence = "Profile"
+
+        when(position){
+            0 -> cs = "Profile"
+            1 -> cs = "tweet"
+        }
+        return cs
     }
 }
