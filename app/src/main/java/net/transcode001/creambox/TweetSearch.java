@@ -61,7 +61,6 @@ public class TweetSearch extends Activity {
                         if (!et.getText().toString().equals("")) {
 
                             mQuery.setQuery(et.getText().toString());
-                            System.out.println("go to searchWord\n");
                             searchWord(mQuery);
                         }
                         mSwipeRefreshLayout.setRefreshing(false);
@@ -78,7 +77,6 @@ public class TweetSearch extends Activity {
                 if (!et.getText().toString().equals("")) {
 
                     mQuery.setQuery(et.getText().toString());
-                    System.out.println("go to searchWord\n");
                     searchWord(mQuery);
                 }
             }
