@@ -90,17 +90,18 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
 
             holder.text.setText(item.getText());
             holder.text.setTextColor(Color.WHITE);
+
             holder.icon.setTag(item.getUser().getScreenName());
             holder.icon.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     try {
                         Intent intent = new Intent(getContext(), UserProfile.class);
-                        if (getItem(position).isRetweet())
+                        if (getItem(position).isRetweet()) {
                             intent.putExtra("Status", getItem(position).getRetweetedStatus().getUser().getId());
-                        else
-                            intent.putExtra("userid", getItem(position).getUser().getId());
-                            intent.putExtra("position",position);
+                            System.out.println();
+                        }else
+                            intent.putExtra("Status",getItem(position).getUser().getId());
                         getContext().startActivity(intent);
                     }catch(AndroidRuntimeException are){
                         System.out.println(are.getCause().toString());
