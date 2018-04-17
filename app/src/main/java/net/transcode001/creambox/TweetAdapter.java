@@ -49,8 +49,7 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
             if (convertView == null) {
                 holder = new HoldView();
                 convertView = mInflater.inflate(R.layout.tweet_layout, null);
-                //convertView.getResources().getColor(R.color.cardview_light_background);
-                //convertView.setBackgroundColor(Color.rgb(0,0,0));
+
                 holder.text = (TextView) convertView.findViewById(R.id.text);
                 holder.name = (TextView) convertView.findViewById(R.id.name);
                 holder.screenName = (TextView) convertView.findViewById(R.id.screen_name);
@@ -59,6 +58,7 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
                 holder.retweetStatus = (TextView)convertView.findViewById(R.id.retweet_status);
 
                 convertView.setTag(holder);
+
             }else{
                 holder=(HoldView)convertView.getTag();
             }
@@ -112,7 +112,6 @@ public class TweetAdapter extends ArrayAdapter<twitter4j.Status>{
 
 
             /*get user icon*/
-            //Bitmap bmp = IconCacheUtils.getIcon(item.getUser().getScreenName());
             getUserIcon(item, holder.icon);
 
 
