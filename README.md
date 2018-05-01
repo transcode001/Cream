@@ -11,4 +11,4 @@ It can...
  -Get user profile(fixing)
 
 
-I don't show you Strings.xml because it has API Key and very secret things
+
