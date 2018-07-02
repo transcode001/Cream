@@ -8,7 +8,5 @@ It can...
 
  -Tweet
 
- -Get user profile(fixing)
-
-
+ -Get user profile
 
