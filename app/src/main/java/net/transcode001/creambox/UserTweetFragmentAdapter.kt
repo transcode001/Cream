@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentPagerAdapter
 
 
 open class UserTweetFragmentAdapter(fm:FragmentManager,id:Long): FragmentPagerAdapter(fm){
-    private val PAGE_NUM =2
+    private val totalPageNum =2
     val id:Long
     init{
         this.id = id
@@ -36,7 +36,7 @@ open class UserTweetFragmentAdapter(fm:FragmentManager,id:Long): FragmentPagerAd
     }
 
     override fun getCount(): Int {
-        return PAGE_NUM
+        return totalPageNum
     }
 
     override fun getPageTitle(position: Int): CharSequence {
