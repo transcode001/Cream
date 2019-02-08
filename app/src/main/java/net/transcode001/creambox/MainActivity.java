@@ -1,14 +1,8 @@
 package net.transcode001.creambox;
 
 import android.content.Intent;
-import android.graphics.Color;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.app.ActionBar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
@@ -29,7 +23,7 @@ import net.transcode001.creambox.asyncs.ReloadTimelineTask;
 import twitter4j.*;
 import twitter4j.conf.Configuration;
 
-import android.support.design.widget.FloatingActionButton;
+//import android.support.design.widget.FloatingActionButton;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -68,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             });
 
             listView.setAdapter(mTweetAdapter);
-
+            /*
             FloatingActionButton fab = findViewById(R.id.float_icon);
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -77,13 +71,12 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
             });
+            */
 
             loadTimeLine();
 
             listView.setVisibility(View.VISIBLE);
         }
-
-
     }
 
     @Override
