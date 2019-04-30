@@ -13,7 +13,7 @@ import java.net.MalformedURLException
 import java.net.URL
 
 
-class GetImageTask(private val imageView: ImageView, private val status: twitter4j.Status, private val utils: IconCacheUtils) : AsyncTask<Void, Void, Bitmap>() {
+internal class GetImageTask(private val imageView: ImageView, private val status: twitter4j.Status, private val utils: IconCacheUtils) : AsyncTask<Void, Void, Bitmap>() {
     private val tag: String
 
     init {

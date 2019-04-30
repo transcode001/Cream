@@ -5,28 +5,21 @@ import android.widget.ListView
 
 import java.util.HashMap
 
-class IconCacheUtils {
+internal class IconCacheUtils {
     /* key -> screen name */
+    private var cache: HashMap<String, Bitmap>? = null
 
     init {
         cache = HashMap()
     }
 
-    companion object {
-        private var cache: HashMap<String, Bitmap>? = null
 
-        fun getIcon(key: String): Bitmap? {
-            return if (cache!!.containsKey(key)) cache!![key] else null
-        }
-
-        fun setIcon(key: String, bmp: Bitmap) {
-            cache!![key] = bmp
-        }
-
-        fun cacheClear() {
-            cache = null
-            cache = HashMap()
-        }
+    fun getIcon(key: String): Bitmap? {
+        return if (cache!!.containsKey(key)) cache!![key] else null
     }
 
+    fun setIcon(key: String, bmp: Bitmap) {
+        cache!![key] = bmp
+    }
+    
 }

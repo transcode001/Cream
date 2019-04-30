@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.Toast
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 
 
 import twitter4j.Twitter
@@ -33,12 +34,22 @@ class Authorization : Activity() {
         mTwitter = TwitterUtils.getInstance(this)
         et = findViewById<View>(R.id.input_help) as EditText
         findViewById<View>(R.id.btn_auth_pin).setOnClickListener {
-            if (et!!.text.toString() != "") {
+            if (!et!!.text.toString().equals("")) {
                 enterPin(et!!.text.toString())
             }
         }
 
-        findViewById<View>(R.id.auth).setOnClickListener { accessToTwitter() }
+        findViewById<View>(R.id.auth).setOnClickListener {
+
+            //accessToTwitter()
+
+
+            val url = access()
+            //print(url)
+
+            if(!url.equals("")) startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+
+        }
 
     }
 
@@ -65,13 +76,20 @@ class Authorization : Activity() {
         task.execute()
     }
 
-    private fun access():String?{
+
+
+
+    private fun access():String{
         try{
-            val url = GlobalScope.async{
+            val getTask = GlobalScope.async {
                 mRequestToken = mTwitter!!.oAuthRequestToken
                 return@async mRequestToken!!.authenticationURL
-
             }
+            runBlocking {
+                return@runBlocking getTask.await()
+            }
+
+
         }catch (te:TwitterException){
             Log.e("AuthorizationError",te.toString())
         }
@@ -113,6 +131,9 @@ class Authorization : Activity() {
     }
 
     private fun successAccessToken(nAccessToken: AccessToken?) {
+        if(nAccessToken == null){
+          showToast("認証に失敗しました")
+        }
         TwitterUtils.storeAccessToken(this, nAccessToken!!)
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)

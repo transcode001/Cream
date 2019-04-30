@@ -11,11 +11,11 @@ import twitter4j.Twitter
 import twitter4j.TwitterException
 
 
-class LoadTimelineTask(private val mTwitter: Twitter, private val mTweetAdapter: TweetAdapter) : AsyncTask<Void, Void, List<twitter4j.Status>>() {
+class LoadTimelineTask(private val mTwitter: Twitter?, private val mTweetAdapter: TweetAdapter?) : AsyncTask<Void, Void, List<twitter4j.Status>>() {
 
     override fun doInBackground(vararg params: Void): List<twitter4j.Status>? {
         try {
-            return mTwitter.homeTimeline
+            return mTwitter!!.homeTimeline
         } catch (e: TwitterException) {
             if (e.isCausedByNetworkIssue) {
                 println()
@@ -30,7 +30,7 @@ class LoadTimelineTask(private val mTwitter: Twitter, private val mTweetAdapter:
         if (result != null) {
             //mTweetAdapter.clear();
             for (status in result) {
-                mTweetAdapter.add(status)
+                mTweetAdapter!!.add(status)
             }
             //getListView().setSelection(0);
         }

@@ -28,9 +28,9 @@ import twitter4j.conf.Configuration
 class MainActivity : AppCompatActivity() {
 
 
-    var mTwitter: Twitter
-    var mConfiguration: Configuration
-    var mTweetAdapter: TweetAdapter
+    var mTwitter: Twitter? = null
+    var mConfiguration: Configuration? = null
+    var mTweetAdapter: TweetAdapter? = null
     private var listView: ListView? = null
     private var mHandler: Handler? = null
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null

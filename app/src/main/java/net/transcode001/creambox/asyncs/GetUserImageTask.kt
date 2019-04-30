@@ -19,7 +19,7 @@ open class GetUserImageTask(mTwitter: Twitter,userId:Long,icon: ImageView): Asyn
         this.icon = icon
     }
 
-    override fun doInBackground(vararg p0: Void?): Bitmap? {
+    override fun doInBackground(vararg p0 : Void?): Bitmap? {
         try {
             val status = mTwitter.showUser(userId)
             val iconUrl = URL(status.profileImageURL)
@@ -28,7 +28,7 @@ open class GetUserImageTask(mTwitter: Twitter,userId:Long,icon: ImageView): Asyn
             iStream.close()
             return image
         }catch(te:TwitterException){
-
+            te.printStackTrace()
         }
         return null
     }

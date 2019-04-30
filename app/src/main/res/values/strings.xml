@@ -5,10 +5,10 @@
     <string name="input_explain">PINを入力してください</string>
     <string name="print_induction">認証を行ってPINコードを入手してください</string>
     <string name="menu_tweet">つぶやく</string>
-    <string name="consumerKey">8vfLWkiO3vLL88XG4hlnLetgu</string>
-    <string name="consumerSecret">xzRCVGLSUnKmYpaUOMqfh6yTR5ZpT6uZa2lQebyER3bW3Q0YGr</string>
-    <string name="accessToken">1670303516-IjzAfmi1bKgAZLrHXLB1welaUqeRUXKvNlziFMc</string>
-    <string name="accessTokenSec">oLxNLxG2IduiHlwmL3x9U2tFm5fwl1jDlu8M3mwDjORpx</string>
+    <string name="consumerKey">oeZAmN1jyBnuAtuWExg0xH8ET </string>
+    <string name="consumerSecret">gCngmQzSs9xsvTz5IKXSqFBOGfMJOIATum3FsbuX9n0hhDw98v</string>
+    <string name="accessToken">839455594205454336-tGHFWodPFgZDtULX6RgMD6d3ZdOS6K5</string>
+    <string name="accessTokenSec">nPWUbOpFnABREKPpyAVl1BKOowPIUyNBZlAzl58s0dRRC</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
 </resources>
