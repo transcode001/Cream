@@ -48,7 +48,7 @@ class Authorization : Activity() {
             //print(url)
 
             if(!url.equals("")) startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-
+            else showToast("認証に失敗しました")
         }
 
     }
@@ -78,17 +78,17 @@ class Authorization : Activity() {
 
 
 
-
+    @kotlinx.coroutines.ExperimentalCoroutinesApi
     private fun access():String{
         try{
             val getTask = GlobalScope.async {
                 mRequestToken = mTwitter!!.oAuthRequestToken
                 return@async mRequestToken!!.authenticationURL
             }
-            runBlocking {
+
+            return runBlocking {
                 return@runBlocking getTask.await()
             }
-
 
         }catch (te:TwitterException){
             Log.e("AuthorizationError",te.toString())
@@ -128,6 +128,29 @@ class Authorization : Activity() {
             }
         }
         task.execute()
+    }
+
+    private fun pin(accessToken: String){
+        try{
+            val task = GlobalScope.async {
+                mAccessToken = mTwitter!!.getOAuthAccessToken(accessToken)
+                val sp = getSharedPreferences(mTwitter!!.screenName, Context.MODE_PRIVATE)
+                val edit = sp.edit()
+                edit.putString("token", mAccessToken!!.token)
+                edit.putString("token_secret", mAccessToken!!.tokenSecret)
+                edit.apply()
+                return@async mAccessToken
+            }
+
+            runBlocking {
+                val token = task.await()
+                successAccessToken(token)
+
+            }
+
+        }catch (e:TwitterException){
+
+        }
     }
 
     private fun successAccessToken(nAccessToken: AccessToken?) {
