@@ -12,6 +12,7 @@ import android.widget.EditText
 import android.widget.Toast
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 
@@ -35,7 +36,7 @@ class Authorization : Activity() {
         et = findViewById<View>(R.id.input_help) as EditText
         findViewById<View>(R.id.btn_auth_pin).setOnClickListener {
             if (!et!!.text.toString().equals("")) {
-                enterPin(et!!.text.toString())
+                pin(et!!.text.toString())
             }
         }
 
@@ -45,7 +46,6 @@ class Authorization : Activity() {
 
 
             val url = access()
-            //print(url)
 
             if(!url.equals("")) startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
             else showToast("認証に失敗しました")
@@ -130,9 +130,9 @@ class Authorization : Activity() {
         task.execute()
     }
 
-    private fun pin(accessToken: String){
+    private fun pin(accessToken: String) = runBlocking {
         try{
-            val task = GlobalScope.async {
+            val token = GlobalScope.async {
                 mAccessToken = mTwitter!!.getOAuthAccessToken(accessToken)
                 val sp = getSharedPreferences(mTwitter!!.screenName, Context.MODE_PRIVATE)
                 val edit = sp.edit()
@@ -140,16 +140,18 @@ class Authorization : Activity() {
                 edit.putString("token_secret", mAccessToken!!.tokenSecret)
                 edit.apply()
                 return@async mAccessToken
-            }
+            }.await()
 
-            runBlocking {
-                val token = task.await()
-                successAccessToken(token)
-
-            }
+            successAccessToken(token)
 
         }catch (e:TwitterException){
-
+            if (e.statusCode == 401) {
+                Log.e("UnableToGetAccessCode", e.toString())
+                showToast("認証エラー\n一時的に利用できません")
+            } else {
+                Log.e("enterPinError", e.toString())
+                showToast("認証エラー\n一時的に利用できません")
+            }
         }
     }
 
