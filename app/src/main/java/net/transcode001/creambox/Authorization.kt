@@ -76,8 +76,6 @@ class Authorization : Activity() {
         task.execute()
     }
 
-
-
     @kotlinx.coroutines.ExperimentalCoroutinesApi
     private fun access():String{
         try{
