@@ -8,6 +8,8 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 import twitter4j.Twitter
 import twitter4j.TwitterException
@@ -26,7 +28,7 @@ class TweetActivity : AppCompatActivity() {
         mInputText = findViewById<View>(R.id.input_text) as EditText
         findViewById<View>(R.id.action_tweet).setOnClickListener { tweet() }
     }
-
+/*
     private fun tweet() {
         val task = object : AsyncTask<String, Void, Boolean>() {
             override fun doInBackground(vararg params: String): Boolean {
@@ -50,6 +52,18 @@ class TweetActivity : AppCompatActivity() {
             }
         }
         task.execute(mInputText!!.text.toString())
+    }
+*/
+    private fun tweet(){
+        GlobalScope.launch {
+            try{
+               mTwitter!!.updateStatus(mInputText!!.text.toString())
+                showToast("ツイートが完了しました")
+                finish()
+            }catch(e:TwitterException){
+                showToast("ツイートに失敗しました")
+            }
+        }
     }
 
     private fun showToast(text: String) {
