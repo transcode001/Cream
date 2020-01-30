@@ -139,7 +139,7 @@ class TweetAdapter(context: Context) : ArrayAdapter<twitter4j.Status>(context, a
         return convertView
     }
 
-    private fun getUserIcon(status: twitter4j.Status, icon: ImageView?) {
+    private fun getUserIcon(status: Status, icon: ImageView?) {
         val getImageTask = GetImageTask(icon!!, status, utils)
         getImageTask.execute()
     }
