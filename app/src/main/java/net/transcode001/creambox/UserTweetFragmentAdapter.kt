@@ -1,12 +1,12 @@
 package net.transcode001.creambox
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentPagerAdapter
 
 
-open class UserTweetFragmentAdapter(fm:FragmentManager,id:Long): FragmentPagerAdapter(fm){
+open class UserTweetFragmentAdapter(fm: FragmentManager, id:Long): FragmentPagerAdapter(fm){
     private val totalPageNum =2
     val id:Long
     init{
@@ -17,11 +17,11 @@ open class UserTweetFragmentAdapter(fm:FragmentManager,id:Long): FragmentPagerAd
         val fragment:Fragment
         when(position){
             0 ->{
-                val args =Bundle()
-                val usf = UserStateFragment()
+                val args = Bundle()
+                val usFragment = UserStateFragment()
                 args.putLong("userid",id)
-                usf.arguments = args
-                fragment = usf
+                usFragment.arguments = args
+                fragment = usFragment
             }
 
             else ->{

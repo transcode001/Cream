@@ -3,38 +3,23 @@ package net.transcode001.creambox
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Color
-import android.os.AsyncTask
 import android.util.AndroidRuntimeException
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
-import android.widget.LinearLayout
-import android.widget.ListView
 import android.widget.TextView
-import android.widget.Toast
 
-import net.transcode001.creambox.Utils.IconCacheUtils
-import net.transcode001.creambox.asyncs.GetImageTask
+import net.transcode001.creambox.util.IconCacheUtils
+import net.transcode001.creambox.async.GetImageTask
 
-import java.io.IOException
-import java.io.InputStream
-import java.net.MalformedURLException
-import java.net.URL
-
-import twitter4j.MediaEntity
 import twitter4j.Status
-import twitter4j.User
 
 
 class TweetAdapter(context: Context) : ArrayAdapter<twitter4j.Status>(context, android.R.layout.simple_list_item_1) {
-    private val mInflater: LayoutInflater
-    private var holder: HoldView? = null
+    var mInflater: LayoutInflater
     private val utils: IconCacheUtils
 
     init {
@@ -42,29 +27,32 @@ class TweetAdapter(context: Context) : ArrayAdapter<twitter4j.Status>(context, a
         utils = IconCacheUtils()
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-        var convertView = convertView
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
+//        var convertView = convertView
+//        if (convertView == null) {
+//            convertView = mInflater.inflate(R.layout.tweet_layout, null)
+//
+//            val text = convertView.findViewById<View>(R.id.text) as TextView
+//            val name = convertView.findViewById<View>(R.id.name) as TextView
+//            val screenName = convertView.findViewById<View>(R.id.screen_name) as TextView
+//            val via = convertView.findViewById<View>(R.id.via) as TextView
+//            val icon = convertView.findViewById<View>(R.id.icon) as ImageView
+//            val retweetStatus = convertView.findViewById<View>(R.id.retweet_status) as TextView
+//
+//            holder = HoldView(text,name,screenName,via,icon,retweetStatus)
+//            convertView.tag = holder
+//
+//        } else {
+//            holder = convertView.tag as HoldView
+//        }
 
-        if (convertView == null) {
-            holder = HoldView()
-            convertView = mInflater.inflate(R.layout.tweet_layout, null)
+        var convertViewTemp = convertView
+        val holder = getViewContent(convertView)
+        convertViewTemp!!.tag = holder
 
-            holder!!.text = convertView!!.findViewById<View>(R.id.text) as TextView
-            holder!!.name = convertView.findViewById<View>(R.id.name) as TextView
-            holder!!.screenName = convertView.findViewById<View>(R.id.screen_name) as TextView
-            holder!!.via = convertView.findViewById<View>(R.id.via) as TextView
-            holder!!.icon = convertView.findViewById<View>(R.id.icon) as ImageView
-            holder!!.retweetStatus = convertView.findViewById<View>(R.id.retweet_status) as TextView
-
-            convertView.tag = holder
-
-        } else {
-            holder = convertView.tag as HoldView
-        }
-
-        /*invisible view*/
-        holder!!.icon!!.visibility = View.GONE
-        holder!!.retweetStatus!!.visibility = View.GONE
+        /* make view invisible */
+        holder.icon.visibility = View.GONE
+        holder.retweetStatus.visibility = View.GONE
         /*
 
 
@@ -75,23 +63,23 @@ class TweetAdapter(context: Context) : ArrayAdapter<twitter4j.Status>(context, a
 
         val item: Status?
         if (getItem(position)!!.isRetweet) {
-            holder!!.retweetStatus!!.visibility = View.VISIBLE
-            holder!!.retweetStatus!!.text = getItem(position)!!.user.screenName + " retweeted"
+            holder.retweetStatus.visibility = View.VISIBLE
+            holder.retweetStatus.text = getItem(position)!!.user.screenName + " retweeted"
             item = getItem(position)!!.retweetedStatus
         } else {
             item = getItem(position)
         }
-        holder!!.text!!.setTextColor(Color.WHITE)
+        holder.text.setTextColor(Color.WHITE)
 
         /*ID表示*/
-        holder!!.name!!.text = item!!.user.name
-        holder!!.screenName!!.text = "@" + item.user.screenName
+        holder.name.text = item!!.user.name
+        holder.screenName.text = "@" + item.user.screenName
 
-        holder!!.text!!.text = item.text
-        holder!!.text!!.setTextColor(Color.WHITE)
+        holder.text.text = item.text
+        holder.text.setTextColor(Color.WHITE)
 
-        holder!!.icon!!.tag = item.user.screenName
-        holder!!.icon!!.setOnClickListener {
+        holder.icon.tag = item.user.screenName
+        holder.icon.setOnClickListener {
             try {
                 val intent = Intent(context, UserProfile::class.java)
                 if (getItem(position)!!.isRetweet) {
@@ -107,7 +95,7 @@ class TweetAdapter(context: Context) : ArrayAdapter<twitter4j.Status>(context, a
 
 
         /*get user icon*/
-        getUserIcon(item, holder!!.icon)
+        getUserIcon(item, holder.icon)
 
 
         /*Media取得*/
@@ -128,19 +116,38 @@ class TweetAdapter(context: Context) : ArrayAdapter<twitter4j.Status>(context, a
             }
             */
 
-        /*via表示*/
+        /*show via*/
         val viaText = item.source.split("<*>".toRegex()).toTypedArray()
         val viaTexts = viaText[1].split("<".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-        holder!!.via!!.text = "via " + viaTexts[0]
+        holder.via.text = "via " + viaTexts[0]
 
-        /*アイコン表示*/
-        holder!!.icon!!.visibility = View.VISIBLE
+        /*show icon*/
+        holder.icon.visibility = View.VISIBLE
 
-        return convertView
+        return convertViewTemp
     }
 
     private fun getUserIcon(status: Status, icon: ImageView?) {
         val getImageTask = GetImageTask(icon!!, status, utils)
         getImageTask.execute()
+    }
+
+    private fun getViewContent(convertView:View?): HoldView {
+        var convertViewTemp = convertView
+        if (convertViewTemp == null) {
+            convertViewTemp = mInflater.inflate(R.layout.tweet_layout, null)
+
+            val text = convertViewTemp.findViewById<View>(R.id.text) as TextView
+            val name = convertViewTemp.findViewById<View>(R.id.name) as TextView
+            val screenName = convertViewTemp.findViewById<View>(R.id.screen_name) as TextView
+            val via = convertViewTemp.findViewById<View>(R.id.via) as TextView
+            val icon = convertViewTemp.findViewById<View>(R.id.icon) as ImageView
+            val retweetStatus = convertViewTemp.findViewById<View>(R.id.retweet_status) as TextView
+
+            return HoldView(text,name,screenName,via,icon,retweetStatus)
+
+        } else {
+            return convertViewTemp.tag as HoldView
+        }
     }
 }

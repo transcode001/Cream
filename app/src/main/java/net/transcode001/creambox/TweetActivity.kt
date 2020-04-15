@@ -1,19 +1,17 @@
 package net.transcode001.creambox
 
 
-import android.app.Activity
-import android.os.AsyncTask
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import net.transcode001.creambox.util.TwitterUtils
 
 import twitter4j.Twitter
 import twitter4j.TwitterException
-import twitter4j.TwitterFactory
 
 
 class TweetActivity : AppCompatActivity() {
