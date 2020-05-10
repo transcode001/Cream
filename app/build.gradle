@@ -3,12 +3,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 29
     buildToolsVersion '28.0.3'
     defaultConfig {
         applicationId "net.transcode001.creambox"
         minSdkVersion 22
-        targetSdkVersion 26
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -42,7 +42,7 @@ dependencies {
     implementation files('libs/twitter4j-core-4.0.7.jar')
     implementation files('libs_meta/twitter4j-core-4.0.7-javadoc.jar')
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.1.0"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.0"
 }
 repositories {
     mavenCentral()

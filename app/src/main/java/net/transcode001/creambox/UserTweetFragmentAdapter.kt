@@ -7,7 +7,9 @@ import androidx.fragment.app.FragmentPagerAdapter
 
 
 open class UserTweetFragmentAdapter(fm: FragmentManager, id:Long): FragmentPagerAdapter(fm){
-    private val totalPageNum =2
+    private val totalPageNum = 2
+    private val userProf = 0
+    private val userTwt = 1
     val id:Long
     init{
         this.id = id
@@ -16,7 +18,7 @@ open class UserTweetFragmentAdapter(fm: FragmentManager, id:Long): FragmentPager
     override fun getItem(position: Int): Fragment {
         val fragment:Fragment
         when(position){
-            0 ->{
+            userProf ->{
                 val args = Bundle()
                 val usFragment = UserStateFragment()
                 args.putLong("userid",id)
@@ -43,8 +45,8 @@ open class UserTweetFragmentAdapter(fm: FragmentManager, id:Long): FragmentPager
         var cs:CharSequence = "Profile"
 
         when(position){
-            0 -> cs = "Profile"
-            1 -> cs = "tweet"
+            userProf -> cs = "profile"
+            userTwt -> cs = "tweets"
         }
         return cs
     }

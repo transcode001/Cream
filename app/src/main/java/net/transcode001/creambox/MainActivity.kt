@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 //        val mConfiguration = TwitterUtils.getConfigurationInstance(this)
         val mTwitter = TwitterUtils.getInstance(this)
         val mSwipeRefreshLayout = findViewById<SwipeRefreshLayout>(R.id.refresh)
-        mSwipeRefreshLayout.isRefreshing = false
+
         mSwipeRefreshLayout.setOnRefreshListener {
             reloadTimeLine(mTwitter, mTweetAdapter, mSwipeRefreshLayout)
         }
@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
     private fun reloadTimeLine(mTwitter: Twitter,mTweetAdapter: TweetAdapter,mSwipeRefreshLayout:SwipeRefreshLayout) {
         val task = ReloadTimelineTask(mTwitter, mTweetAdapter)
         task.execute()
-        mSwipeRefreshLayout.isRefreshing = false
+//        mSwipeRefreshLayout.isRefreshing = false
     }
 
     private fun showToast(text: String) {

@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.util.AndroidRuntimeException
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,39 +28,25 @@ class TweetAdapter(context: Context) : ArrayAdapter<twitter4j.Status>(context, a
         utils = IconCacheUtils()
     }
 
-    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
-//        var convertView = convertView
-//        if (convertView == null) {
-//            convertView = mInflater.inflate(R.layout.tweet_layout, null)
-//
-//            val text = convertView.findViewById<View>(R.id.text) as TextView
-//            val name = convertView.findViewById<View>(R.id.name) as TextView
-//            val screenName = convertView.findViewById<View>(R.id.screen_name) as TextView
-//            val via = convertView.findViewById<View>(R.id.via) as TextView
-//            val icon = convertView.findViewById<View>(R.id.icon) as ImageView
-//            val retweetStatus = convertView.findViewById<View>(R.id.retweet_status) as TextView
-//
-//            holder = HoldView(text,name,screenName,via,icon,retweetStatus)
-//            convertView.tag = holder
-//
-//        } else {
-//            holder = convertView.tag as HoldView
-//        }
+    /**
+     * Convert Nullable View As A Non-null View and return
+     *
+     */
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
 
-        var convertViewTemp = convertView
-        val holder = getViewContent(convertView)
-        convertViewTemp!!.tag = holder
+        val view = convertView ?: createConvertView()
+
+        val holder = view.tag as HoldView
 
         /* make view invisible */
         holder.icon.visibility = View.GONE
         holder.retweetStatus.visibility = View.GONE
+
         /*
-
-
-            //以前保持した画像があれば削除
-            linearLayout = (LinearLayout) view.findViewById(R.id.media);
-            if(linearLayout.getChildCount()>0) linearLayout.removeAllViews();
-            */
+        //以前保持した画像があれば削除
+        linearLayout = (LinearLayout) view.findViewById(R.id.media);
+        if(linearLayout.getChildCount()>0) linearLayout.removeAllViews();
+        */
 
         val item: Status?
         if (getItem(position)!!.isRetweet) {
@@ -100,21 +87,20 @@ class TweetAdapter(context: Context) : ArrayAdapter<twitter4j.Status>(context, a
 
         /*Media取得*/
         /*
-            MediaEntity[] mediaEntity = item.getExtendedMediaEntities();
-            if(mediaEntity.length>0) {
-                for (MediaEntity media : mediaEntity) {
-                    ImageView mediaView = new ImageView(getContext());
-                    System.out.println("resource:"+media.getMediaURL());
-                    Uri uri = Uri.parse(media.getMediaURL());
-                    mediaView.setImageURI(uri);
-                    LinearLayout.LayoutParams params =
-                            new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                    params.setMarginEnd(15);
-                    mediaView.setLayoutParams(params);
-                    linearLayout.addView(mediaView,params);
-                }
-            }
-            */
+        MediaEntity[] mediaEntity = item.getExtendedMediaEntities();
+
+        for (MediaEntity media : mediaEntity) {
+            ImageView mediaView = new ImageView(getContext());
+            System.out.println("resource:"+media.getMediaURL());
+            Uri uri = Uri.parse(media.getMediaURL());
+            mediaView.setImageURI(uri);
+            LinearLayout.LayoutParams params =
+                    new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            params.setMarginEnd(15);
+            mediaView.setLayoutParams(params);
+            linearLayout.addView(mediaView,params);
+        }
+        */
 
         /*show via*/
         val viaText = item.source.split("<*>".toRegex()).toTypedArray()
@@ -124,7 +110,7 @@ class TweetAdapter(context: Context) : ArrayAdapter<twitter4j.Status>(context, a
         /*show icon*/
         holder.icon.visibility = View.VISIBLE
 
-        return convertViewTemp
+        return view
     }
 
     private fun getUserIcon(status: Status, icon: ImageView?) {
@@ -132,22 +118,25 @@ class TweetAdapter(context: Context) : ArrayAdapter<twitter4j.Status>(context, a
         getImageTask.execute()
     }
 
-    private fun getViewContent(convertView:View?): HoldView {
-        var convertViewTemp = convertView
-        if (convertViewTemp == null) {
-            convertViewTemp = mInflater.inflate(R.layout.tweet_layout, null)
+    /**
+     * Create convert view
+     */
 
-            val text = convertViewTemp.findViewById<View>(R.id.text) as TextView
-            val name = convertViewTemp.findViewById<View>(R.id.name) as TextView
-            val screenName = convertViewTemp.findViewById<View>(R.id.screen_name) as TextView
-            val via = convertViewTemp.findViewById<View>(R.id.via) as TextView
-            val icon = convertViewTemp.findViewById<View>(R.id.icon) as ImageView
-            val retweetStatus = convertViewTemp.findViewById<View>(R.id.retweet_status) as TextView
+    private fun createConvertView():View{
 
-            return HoldView(text,name,screenName,via,icon,retweetStatus)
+        val view = mInflater.inflate(R.layout.tweet_layout, null)
 
-        } else {
-            return convertViewTemp.tag as HoldView
-        }
+        val text = view.findViewById<View>(R.id.text) as TextView
+        val name = view.findViewById<View>(R.id.name) as TextView
+        val screenName = view.findViewById<View>(R.id.screen_name) as TextView
+        val via = view.findViewById<View>(R.id.via) as TextView
+        val icon = view.findViewById<View>(R.id.icon) as ImageView
+        val retweetStatus = view.findViewById<View>(R.id.retweet_status) as TextView
+
+        val holder = HoldView(text,name,screenName,via,icon,retweetStatus)
+        view.tag = holder
+
+        return view
+
     }
 }

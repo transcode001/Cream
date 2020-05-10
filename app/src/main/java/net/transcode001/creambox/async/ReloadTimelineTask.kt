@@ -17,9 +17,9 @@ open class ReloadTimelineTask(mTwitter: Twitter?,mTweetAdapter: TweetAdapter?):A
 
     override fun doInBackground(vararg params:Void):List<twitter4j.Status>?{
         try {
-            val s: twitter4j.Status = mTweetAdapter!!.getItem(0)
+            val s: twitter4j.Status? = mTweetAdapter!!.getItem(0)
             val p = Paging()
-            p.setSinceId(s.id)
+            p.setSinceId(s!!.id)
             return mTwitter!!.getHomeTimeline(p)
         }catch (te:TwitterException){
 
