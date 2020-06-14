@@ -12,8 +12,8 @@ import android.widget.EditText
 import android.widget.Toast
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import net.transcode001.creambox.util.TwitterUtils
 
 
 import twitter4j.Twitter

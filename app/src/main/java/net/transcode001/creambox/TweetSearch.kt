@@ -2,32 +2,18 @@ package net.transcode001.creambox
 
 
 import android.app.Activity
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.AsyncTask
 import android.os.Bundle
 import android.os.Handler
-import android.support.v4.widget.SwipeRefreshLayout
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.ListView
-import android.widget.TextView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 
-import com.loopj.android.image.SmartImageView
-
-import java.io.IOException
-import java.io.InputStream
-import java.net.MalformedURLException
-import java.net.URL
+import net.transcode001.creambox.util.TwitterUtils
 
 import twitter4j.QueryResult
-import twitter4j.Status
 import twitter4j.Twitter
 import twitter4j.TwitterException
 
