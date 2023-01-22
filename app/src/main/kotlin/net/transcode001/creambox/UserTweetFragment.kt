@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import kotlinx.android.synthetic.main.profile_user_tweet.*
 import net.transcode001.creambox.async.LoadUserTimeLineTask
 import net.transcode001.creambox.util.TwitterUtils
 
@@ -31,7 +30,7 @@ open class UserTweetFragment: Fragment(){
         /*
             use profile_tweet_text instead of listview
          */
-        profile_tweet_text.adapter = mTweetAdapter
+//        profile_tweet_text.adapter = mTweetAdapter
         val mTwitter = context?.let { TwitterUtils.getInstance(it) }
         val task = LoadUserTimeLineTask(mTwitter, mTweetAdapter, userId)
         task.execute()
