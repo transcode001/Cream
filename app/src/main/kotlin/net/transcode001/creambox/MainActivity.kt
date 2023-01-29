@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         if (!TwitterUtils.hasAccessToken(applicationContext)) {
             val intent = Intent(applicationContext, Authorization::class.java)
             startActivity(intent)
-            finish()
+            return;
         }
 
         val mTweetAdapter = TweetAdapter(this)
